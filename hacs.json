@@ -1,0 +1,6 @@
+{
+  "name": "Reolink IP NVR/cameras",
+  "domains": "camera",
+  "iot_class": "Local Push",
+  "homeassistant": "2022.8"
+}

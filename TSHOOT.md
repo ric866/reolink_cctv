@@ -1,0 +1,39 @@
+#TROUBLESHOOTING GUIDE
+
+## Checklist
+
+- Is your hardware compatible with this integration?
+- Are you using an up-to-date firmware?
+- Did you check the Frequent Issue section of this document?
+- Open a support ticket and provide useful logs (Look at sections below to enable debug logging)
+
+## Enable debugging of Reolink components in HA
+Edit your configuration yaml file to insert/edit the logger section and then restart your Core services:
+```yaml
+logger:
+  default: warning
+  logs:
+    custom_components.reolink_cctv: debug
+    custom_components.reolink_cctv.host.data: warning
+    reolink_ip: debug
+```
+Copy and Paste all logs after you have clicked on "LOAD FULL HOMEASSISTANT LOG" button.
+
+## Frequent issues
+
+### Motion sensors remains unavailable or never trigger or lags/misses events
+
+- ONVIF protocol MUST BE ENABLED:
+  - If you are using an NVR, you must first enable ONVIF protocol via a menu which is only available via an HDMI screen connected to the NVR, without this then HA cannot be aware of a motion detection event.
+  - From a camera, starting version 3.1.7XX ONVIF is disabled by default and must be enabled from **Networks > Advanced > Ports** menu
+- HomeAssistant must have an internal URL configured and:
+  - IT MUST NOT USE HTTPS : Reolink doesn't support HTTPS based Webhooks.
+  - URL also should not be using a DNS name but an ip address instead unless you have a solid DNS setup your camera is probably not able to resolve your address
+- You can re-configure default timer called "Subscription watchdog-timer interval" for a specific device, it defaults to 30 seconds but you can go down to 2-5 seconds. Because it will hammer your NVR/camera's API every X seconds, it may have CPU/RAM/stability impacts on your device.
+  
+### Push notification toggle has no effect in Android/iPhone app which doesn't change state
+
+This is absolutly normal. The firmware has 2 types of toggles for Push notifications: a local one (specific to your phone, your wife's phone has its own toggle) which is available in the application and a Master toggle which you cannot see in the application.  
+This integration has access only to the Master toggle, which sits on top of your individual phone's application toggle.
+
+

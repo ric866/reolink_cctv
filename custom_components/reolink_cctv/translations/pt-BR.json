@@ -1,0 +1,58 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Esta câmera já está configurada"
+        },
+        "error": {
+            "cannot_connect": "Falha ao conectar com a câmera",
+            "invalid_auth": "nome de usuário ou senha inválidos",
+            "unknown": "Erro inesperado"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host",
+                    "port": "Porta",
+                    "use_https": "Ativar HTTPS",
+                    "username": "Nome de usuário",
+                    "password": "Senha"
+                }
+            },
+            "nvr": {
+                "data": {
+                    "channel": "Canal"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "external_host": "External URL",
+                    "protocol": "Protocolo",
+                    "stream": "Stream",
+                    "timeout": "Tempo limite (segundos)",
+                    "subscription_watchdog_interval": "Subscription watchdog-timer interval (seconds, 0 or less to disable).\nReolink's event-subscription is not always reliable. This will check it with this interval, and if subscription got not active - will force-update sensors. The less this value is - the less resources of your HA will be spent. Better to set this value to 0 if your subscription is robust enough.",
+                    "motion_off_delay": "Delay de desligamento do sensor de movimento (segundos)",
+                    "motion_force_off": "Motion sensor force-off timeout (seconds)",
+                    "playback_months": "Intervalo de reprodução (meses)",
+                    "playback_thumbnails": "Crie miniaturas para itens de reprodução",
+                    "playback_thumbnail_path": "Caminho de miniatura personalizado"
+                }
+            }
+        }
+    },
+    "device_automation": {
+        "trigger_type": {
+            "new_vod": "Novo vídeo em movimento detectado"
+        },
+        "action_type": {
+            "capture_vod_thumbnail": "Salvar instantâneo como miniatura de movimento"
+        },
+        "condition_type": {
+            "vod_no_thumbnail": "O último vídeo em movimento não tem miniatura",
+            "vod_has_thumbnail": "O último vídeo em movimento tem uma miniatura"
+        }
+    }
+}

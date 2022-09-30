@@ -1,0 +1,58 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Telecamera già configurata"
+        },
+        "error": {
+            "cannot_connect": "Connessione fallita",
+            "invalid_auth": "Username o password errati",
+            "unknown": "Errore inaspettato"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host",
+                    "port": "Porta",
+                    "use_https": "Abilita HTTPS",
+                    "username": "Username",
+                    "password": "Password"
+                }
+            },
+            "nvr": {
+                "data": {
+                    "channel": "Canale"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "external_host": "External URL",
+                    "protocol": "Protocollo",
+                    "stream": "Stream",
+                    "timeout": "Timeout (secondi)",
+                    "subscription_watchdog_interval": "Subscription watchdog-timer interval (seconds, 0 or less to disable).\nReolink's event-subscription is not always reliable. This will check it with this interval, and if subscription got not active - will force-update sensors. The less this value is - the less resources of your HA will be spent. Better to set this value to 0 if your subscription is robust enough.",
+                    "motion_off_delay": "Ritardo chiusura allarme (secondi)",
+                    "motion_force_off": "Motion sensor force-off timeout (seconds)",
+                    "playback_months": "Range playback range (mesi)",
+                    "playback_thumbnails": "Crea anteprima per i playback",
+                    "playback_thumbnail_path": "Cartella personalizzata anteprime"
+                }
+            }
+        }
+    },
+    "device_automation": {
+        "trigger_type": {
+            "new_vod": "Nuovo video/allarme rilevato"
+        },
+        "action_type": {
+            "capture_vod_thumbnail": "Salva snaphots come miniatura del video/allarme"
+        },
+        "condition_type": {
+            "vod_no_thumbnail": "L'ultimo video/allarme non ha anteprima",
+            "vod_has_thumbnail": "L'ultimo video/allarme ha l'anteprima"
+        }
+    }
+}
