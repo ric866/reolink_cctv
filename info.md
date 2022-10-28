@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.20  %}
+- Quick fix release.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.19  %}
 - Improved the `last_record_url` attribute in last-record sensor. Now it doesn't use RTMP stream (HTTP/HTTPS links instead), and can use the "external URL" for the camera/NVR (set up in the entry's config, not used if empty).
 {% endif %}

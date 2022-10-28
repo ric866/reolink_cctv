@@ -28,6 +28,15 @@ from .const import (
     CONF_THUMBNAIL_PATH,
     CONF_STREAM_FORMAT,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
+    DEFAULT_EXTERNAL_HOST,
+    DEFAULT_PROTOCOL,
+    DEFAULT_MOTION_FORCE_OFF,
+    DEFAULT_MOTION_OFF_DELAY,
+    DEFAULT_PLAYBACK_MONTHS,
+    DEFAULT_STREAM,
+    DEFAULT_STREAM_FORMAT,
+    DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
+    DEFAULT_TIMEOUT,
     DEVICE_CONFIG_UPDATE_COORDINATOR,
     SUBSCRIPTION_WATCHDOG_COORDINATOR,
     DOMAIN,
@@ -143,19 +152,19 @@ async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry):
     """Update the configuration of the host entity."""
     host: ReolinkHost = hass.data[DOMAIN][entry.entry_id][HOST]
 
-    host.motion_off_delay   = entry.options[CONF_MOTION_OFF_DELAY]
-    host.motion_force_off   = entry.options[CONF_MOTION_FORCE_OFF]
-    host.playback_months    = entry.options[CONF_PLAYBACK_MONTHS]
+    host.motion_off_delay   = entry.options.get(CONF_MOTION_OFF_DELAY, DEFAULT_MOTION_OFF_DELAY)
+    host.motion_force_off   = entry.options.get(CONF_MOTION_FORCE_OFF, DEFAULT_MOTION_FORCE_OFF)
+    host.playback_months    = entry.options.get(CONF_PLAYBACK_MONTHS, DEFAULT_PLAYBACK_MONTHS)
     host.thumbnail_path     = hass.config.path(f"{STORAGE_DIR}/{DOMAIN}/{entry.entry_id}") if CONF_THUMBNAIL_PATH not in entry.options else entry.options[CONF_THUMBNAIL_PATH]
-    host.api.external_host  = entry.options[CONF_EXTERNAL_HOST]
-    host.api.timeout        = entry.options[CONF_TIMEOUT]
-    host.api.protocol       = entry.options[CONF_PROTOCOL]
-    host.api.stream         = entry.options[CONF_STREAM]
-    host.api.stream_format  = entry.options[CONF_STREAM_FORMAT]
+    host.api.external_host  = entry.options.get(CONF_EXTERNAL_HOST, DEFAULT_EXTERNAL_HOST)
+    host.api.timeout        = entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
+    host.api.protocol       = entry.options.get(CONF_PROTOCOL, DEFAULT_PROTOCOL)
+    host.api.stream         = entry.options.get(CONF_STREAM, DEFAULT_STREAM)
+    host.api.stream_format  = entry.options.get(CONF_STREAM_FORMAT, DEFAULT_STREAM_FORMAT)
 
     coordinator_subscription_watchdog: DataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id][SUBSCRIPTION_WATCHDOG_COORDINATOR]
 
-    host.subscription_watchdog_interval = entry.options[CONF_SUBSCRIPTION_WATCHDOG_INTERVAL]
+    host.subscription_watchdog_interval = entry.options.get(CONF_SUBSCRIPTION_WATCHDOG_INTERVAL, DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL)
 
     if coordinator_subscription_watchdog.update_interval != host.subscription_watchdog_interval:
         if host.subscription_watchdog_interval is None or host.subscription_watchdog_interval <= 0:
