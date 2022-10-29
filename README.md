@@ -25,6 +25,22 @@ If ONVIF subscription failed for some reason (ONVIF on the device disabled, port
 - Workaround for Reolink issue in some camera models/firmwares: because of this issue motion-sensors were not resetting back on such camera models.  
 Now if you have such cameras and experience motion-sensors not coming back to "Clear" for a long time - you can tune the "Motion sensor force-off timeout" in integration's config to the desired value. If you have cameras that work OK without this workaround - having this value as "0" would save some HA computing resources.
 - Last-record sensor (former "last event") now stores the very last motion event's screenshot **automatically**. It is renamed to "last record" because not always it points to a last *motion event*. For example it can be just a very last **recorded chunk** which in case of continuous 24/7 record stores one-two hours of continuous video, with an "event" start like an hour-two ago (when the chunk's record started). Thus it looks more logical to me if it's named "last record".
+- Implemented the `last_record_url` attribute in the last-record sensor, and the "external URL" setting for the camera/NVR (set up in the integration entry's config, not used if empty). Usable if you set up an automation to send a motion-notification to your phone with a video-link in it.  
+For example, you can set up different HTTPS ports in each camera settings, and forward all these ports as-is through your router (or just forward the NVR's port if you use NVR-connection). This way, if you for example set the "external URL" in the integration-entry settings like `<some IP>`, then the generated video link in the `last_record_url` attribute would be like `https://<some IP>:<camera-specific port>/cgi-bin/<the rest of the URL>`. The automation could be e.g. like this:  
+```
+automation:
+  - alias: Notify mobile app
+    trigger:
+      ...
+    action:
+      - service: notify.mobile_app_<your_device_id_here>
+        data:
+          message: "Motion event"
+          data:
+            image: "https://github.com/home-assistant/assets/blob/master/logo/logo.png?raw=true"
+            video: "{{ state_attr('sensor.front_left_last_record', 'last_record_url') }}"
+```  
+**BE CAREFUL THOUGH** with this link: Reolink API requires login/pass credentials provided in a link to be able to watch a video from a device. Thus if you use this functionality - be sure the link is sent over **encrypted** channels, and the link itself is an **HTTPS** link (so that the credentials are not visible to anyone when the link is used).
 - Media-browser support for NVRs is implemented.  
 I intentionally do not fill-in **all** the thumbnails during media-browsing: this way if your NVR is recording 24/7 - you have the way to distinguish. Those 1-2 hours chunks **with** thumbnails on them had some movement events, and those **without** thumbnails did not have any movements during all chunk recording (so the last-record sensor did not auto-write any thumbnails because no events happened).
 - Implemented garbage-collection for old thumbnails/scrennshots when browsing, to not overfill Home Assistant drive.
