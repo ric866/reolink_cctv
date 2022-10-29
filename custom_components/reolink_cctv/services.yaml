@@ -143,13 +143,3 @@ cleanup_thumbnails:
       domain: camera
     device:
       integration: None
-  fields:
-    older_than:
-      name: Older than
-      required: false
-      description: >-
-        If provided will remove all thumbnails older than the specified date, irregardless
-        of matching VoD
-      example: "1/1/2021"
-      selector:
-        datetime:

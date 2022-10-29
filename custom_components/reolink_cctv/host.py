@@ -268,14 +268,9 @@ class ReolinkHost:
     '''
 
 
-    async def cleanup_vod_thumbnails(self, channel: int, start: Optional[dt.datetime] = None):
+    async def cleanup_vod_thumbnails(self, channel: int):
         """ Cleanup older thumbnail files """
-
-        if start is None:
-            current_time = dt_util.now()
-            start = dt.datetime.combine(current_time.date().replace(day = 1), dt.time.min)
-            if self.playback_months > 1:
-                start -= relativedelta(months = int(self.playback_months))
+        start = dt_util.now() - relativedelta(months = int(self.playback_months))
 
         start_date_timestamp = start.timestamp()
         directory = os.path.join(self.thumbnail_path, f"{channel}")

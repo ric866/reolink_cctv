@@ -243,13 +243,13 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
     #endof commit_thumbnails()
 
 
-    async def cleanup_thumbnails(self, older_than):
+    async def cleanup_thumbnails(self, **kwargs):
         """ Clear camera VoDs older than the date """
         if not self.playback_support:
             _LOGGER.error("Video Playback is not supported on %s camera.", self.name)
             return
 
-        await self._host.cleanup_vod_thumbnails(self._channel, older_than)
+        await self._host.cleanup_vod_thumbnails(self._channel)
     #endof cleanup_thumbnails()
 
 
