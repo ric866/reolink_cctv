@@ -147,7 +147,7 @@ class MotionSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
         if self._channel not in self._host.motion_detection_enabled or not self._host.motion_detection_enabled[self._channel]:
             return False
         else:
-            return self._host.api.session_active and (self._host.api.subscribed or self.is_on())
+            return self._host.api.session_active and (self._host.api.subscribed or self.is_on)
     #endof available
 
 
@@ -339,7 +339,7 @@ class ObjectDetectedSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
         if self._channel not in self._host.motion_detection_enabled or not self._host.motion_detection_enabled[self._channel]:
             return False
         else:
-            return self._host.api.session_active and (self._host.api.subscribed or self.is_on())
+            return self._host.api.session_active and (self._host.api.subscribed or self.is_on)
 
     @property
     def device_class(self):
