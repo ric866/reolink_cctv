@@ -14,6 +14,7 @@ LONG_TOKENS                             = "long_tokens"
 LAST_RECORD                             = "last_record"
 
 CONF_EXTERNAL_HOST                      = "external_host"
+CONF_EXTERNAL_PORT                      = "external_port"
 CONF_USE_HTTPS                          = "use_https"
 CONF_STREAM                             = "stream"
 CONF_STREAM_FORMAT                      = "stream_format"
@@ -26,6 +27,7 @@ CONF_THUMBNAIL_PATH                     = "playback_thumbnail_path"
 CONF_SUBSCRIPTION_WATCHDOG_INTERVAL     = "subscription_watchdog_interval"
 
 DEFAULT_EXTERNAL_HOST                   = ""
+DEFAULT_EXTERNAL_PORT                   = ""
 DEFAULT_USE_HTTPS                       = False
 DEFAULT_CHANNELS                        = [0]
 DEFAULT_MOTION_OFF_DELAY                = 5

@@ -28,7 +28,8 @@
         "step": {
             "init": {
                 "data": {
-                    "external_host": "External URL",
+                    "external_host": "External IP/domain",
+                    "external_port": "External port",
                     "protocol": "Protocolo",
                     "stream": "Transferencia",
                     "timeout": "Tiempo fuera (segundos)",

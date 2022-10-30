@@ -19,6 +19,7 @@ from reolink_ip.exceptions import CredentialsInvalidError, ApiError
 from .host import ReolinkHost
 from .const import (
     CONF_EXTERNAL_HOST,
+    CONF_EXTERNAL_PORT,
     CONF_CHANNELS,
     CONF_USE_HTTPS,
     CONF_MOTION_OFF_DELAY,
@@ -30,6 +31,7 @@ from .const import (
     CONF_THUMBNAIL_PATH,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_EXTERNAL_HOST,
+    DEFAULT_EXTERNAL_PORT,
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
     DEFAULT_USE_HTTPS,
@@ -184,6 +186,11 @@ class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Optional(
                         CONF_EXTERNAL_HOST,
                         default = self.config_entry.options.get(CONF_EXTERNAL_HOST, DEFAULT_EXTERNAL_HOST),
+                    ): cv.string,
+
+                    vol.Optional(
+                        CONF_EXTERNAL_PORT,
+                        default = self.config_entry.options.get(CONF_EXTERNAL_PORT, DEFAULT_EXTERNAL_PORT),
                     ): cv.string,
 
                     vol.Required(
