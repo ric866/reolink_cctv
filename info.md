@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.23  %}
+- Bug fix: folder names for thumbnails' storage were different in some cases.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.22  %}
 - Fixed binary sensor bug.
 - Implemented the "external port" setting for `last_record_url` links (in addition to "external URL"): to be able to map different ports in the router to the same local ports on cameras.

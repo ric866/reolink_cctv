@@ -38,7 +38,7 @@ DEFAULT_STREAM_FORMAT                   = "h264"
 DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL  = 60
 
 DEFAULT_TIMEOUT                         = 60
-DEFAULT_PLAYBACK_MONTHS                 = 2
+DEFAULT_PLAYBACK_MONTHS                 = 1
 DEFAULT_THUMBNAIL_OFFSET                = 6
 
 SUPPORT_PTZ                             = 1024
