@@ -329,7 +329,7 @@ class ReolinkHost:
 
 
     async def register_webhook(self) -> bool:
-        self._webhook_id    = self._hass.components.webhook.async_generate_id()
+        self._webhook_id    = f"reolink_{self.api.nvr_name}_webhook"#self._hass.components.webhook.async_generate_id()
         self._event_id      = self._webhook_id
         self._hass.components.webhook.async_register(DOMAIN, self._event_id, self._webhook_id, handle_webhook)
 

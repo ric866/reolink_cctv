@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.24  %}
+- Fixed issue with integration's webhook/event IDs being not human-readable.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.23  %}
 - Bug fix: folder names for thumbnails' storage were different in some cases.
 {% endif %}
