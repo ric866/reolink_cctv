@@ -31,6 +31,7 @@ from reolink_ip.api         import (
     PERSON_DETECTION_TYPE,
     VEHICLE_DETECTION_TYPE,
     PET_DETECTION_TYPE,
+    VISITOR_DETECTION_TYPE
 )
 
 from .const import (
@@ -86,13 +87,14 @@ class ReolinkHost:
         from .camera import ReolinkCamera
         self.cameras: dict[int, ReolinkCamera] = dict()
 
-        from .binary_sensor import MotionSensor, ObjectDetectedSensor
+        from .binary_sensor import MotionSensor, ObjectDetectedSensor, VisitorSensor
 
         self.sensor_motion_detection:   Optional[MotionSensor]          = dict()
         self.sensor_face_detection:     Optional[ObjectDetectedSensor]  = dict()
         self.sensor_person_detection:   Optional[ObjectDetectedSensor]  = dict()
         self.sensor_vehicle_detection:  Optional[ObjectDetectedSensor]  = dict()
         self.sensor_pet_detection:      Optional[ObjectDetectedSensor]  = dict()
+        self.sensor_visitor_detection:  Optional[VisitorSensor]         = dict()
 
         channels = (DEFAULT_CHANNELS if CONF_CHANNELS not in config else config[CONF_CHANNELS])
         self.motion_detection_enabled : bool = {c: True for c in channels}
@@ -402,6 +404,7 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request):
     vehicle                     = None
     pet                         = None
     motion_alarm                = None
+    visitor                     = None
     motion_common_notification  = True
 
     root = XML.fromstring(data)
@@ -457,6 +460,12 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request):
                 continue
             if "Value" in data_element.attrib:
                 motion_alarm = data_element.attrib["Value"] == "true"
+        elif rule == "Visitor":
+            data_element = message.find(".//{http://www.onvif.org/ver10/schema}SimpleItem[@Name='State']")
+            if data_element is None:
+                continue
+            if "Value" in data_element.attrib:
+                visitor = data_element.attrib["Value"] == "true"
 
     if motion is not None:
         if motion_common_notification:
@@ -476,6 +485,8 @@ async def handle_webhook(hass: HomeAssistant, webhook_id: str, request):
         hass.bus.async_fire(webhook_id, {VEHICLE_DETECTION_TYPE: vehicle})
     if pet is not None:
         hass.bus.async_fire(webhook_id, {PET_DETECTION_TYPE: pet})
+    if visitor is not None:
+        hass.bus.async_fire(webhook_id, {VISITOR_DETECTION_TYPE: visitor})
 #endof handle_webhook()
 
 

@@ -13,6 +13,7 @@ from reolink_ip.api import (
     PERSON_DETECTION_TYPE,
     VEHICLE_DETECTION_TYPE,
     PET_DETECTION_TYPE,
+    VISITOR_DETECTION_TYPE
 )
 
 from .host   import ReolinkHost
@@ -54,6 +55,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
             new_sensors.append(host.sensor_person_detection[c])
             new_sensors.append(host.sensor_vehicle_detection[c])
             new_sensors.append(host.sensor_pet_detection[c])
+
+        if host.api.is_doorbell_enabled(c):
+            _LOGGER.debug("Camera %s (channel %s, device model %s) supports doorbell so visitor sensors will be created.", host.api.camera_name(c), c, host.api.model)
+
+            host.sensor_visitor_detection[c] = VisitorSensor(hass, config_entry, c)
+            new_sensors.append(host.sensor_visitor_detection[c])
 
     async_add_devices(new_sensors, update_before_add = True)
 #endof async_setup_entry()
@@ -399,3 +406,113 @@ class ObjectDetectedSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
         await self.register_clear_callback()
     #endof handle_event()
 #endof class ObjectDetectedSensor
+
+
+##########################################################################################################################################################
+# Visitor sensor class
+##########################################################################################################################################################
+class VisitorSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
+    """Implementation of a Reolink IP camera doorbell button sensor."""
+
+    def __init__(self, hass, config, channel: int):
+        ReolinkCoordinatorEntity.__init__(self, hass, config)
+        ReolinkBinarySensorEntity.__init__(self)
+
+        self._channel: int          = channel
+        self._last_detection_time   = datetime.datetime.min
+        self._unique_id             = f"reolink_visitor_{self._host.unique_id}_{self._channel}"
+        self._name                  = f"{self._host.api.camera_name(channel)} visitor"
+    #endof __init__()
+
+
+    ##############################################################################
+    # Parent overrides
+    @property
+    def icon(self):
+        return "mdi:doorbell"
+
+    @property
+    def unique_id(self):
+        return self._unique_id
+
+
+    @property
+    def name(self):
+        return self._name
+
+
+    @property
+    def is_on(self):
+        if self._state or self._host.motion_off_delay == 0:
+            return self._state
+
+        if (datetime.datetime.now() - self._last_detection_time).total_seconds() < self._host.motion_off_delay:
+            return True
+        else:
+            return False
+    #endof is_on
+
+
+    @property
+    def available(self) -> bool:
+        return self._host.api.session_active and (self._host.api.subscribed or self.is_on)
+    #endof available
+
+
+    @property
+    def device_class(self):
+        return VISITOR_DETECTION_TYPE
+
+
+    @property
+    def extra_state_attributes(self):
+        attrs = super().extra_state_attributes
+        if attrs is None:
+            attrs = {}
+
+        attrs["bus_event_id"] = self._host.event_id
+        return attrs
+    #endof extra_state_attributes
+
+
+    async def async_added_to_hass(self) -> None:
+        """Entity created."""
+        await super().async_added_to_hass()
+        self.hass.bus.async_listen(self._host.event_id, self.handle_event)
+    #endof async_added_to_hass()
+
+
+    # async def request_refresh(self):
+    #     """Call the coordinator to update the API."""
+    #     await self.coordinator.async_request_refresh()
+    #     #await self.async_write_ha_state()
+
+
+    ##############################################################################
+    # Class methods
+    async def handle_event(self, event):
+        """Handle incoming event for visitor pressed a doorbell button."""
+        if not self.enabled:
+            return
+
+        visitor_event_state = None
+        if VISITOR_DETECTION_TYPE in event.data:
+            visitor_event_state = event.data[VISITOR_DETECTION_TYPE]
+        else:
+            return
+
+        if visitor_event_state is not None:
+            _LOGGER.info("VISITOR received %s: %s", visitor_event_state, self._host.api.camera_name(self._channel))
+
+            self._state = visitor_event_state
+
+            if self._state:
+                _LOGGER.info("VISITOR TRIGGERED: %s", self._host.api.camera_name(self._channel))
+                self._last_detection_time = datetime.datetime.now()
+
+            self.async_schedule_update_ha_state()
+            #await self.async_write_ha_state()
+
+        await self.register_clear_callback()
+    #endof handle_event()
+#endof class VisitorSensor

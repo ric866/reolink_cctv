@@ -12,6 +12,7 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 {% endif %}
 
 {% if version_installed.replace("v", "") | float < 0.0.24  %}
+- Implemented doorbell-cameras support: visitor sensor is now available for such cameras. The sensor will trigger when a "Visitor" ONVIF-notification is sent by a camera.
 - Fixed issue with integration's webhook/event IDs being not human-readable.
 {% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.23  %}
