@@ -24,7 +24,7 @@ from .const import (
     CONF_USE_HTTPS,
     CONF_MOTION_OFF_DELAY,
     CONF_MOTION_FORCE_OFF,
-    CONF_PLAYBACK_MONTHS,
+    CONF_PLAYBACK_DAYS,
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_STREAM_FORMAT,
@@ -35,7 +35,7 @@ from .const import (
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
     DEFAULT_USE_HTTPS,
-    DEFAULT_PLAYBACK_MONTHS,
+    DEFAULT_PLAYBACK_DAYS,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
     DEFAULT_STREAM_FORMAT,
@@ -224,8 +224,8 @@ class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
                     ): vol.All(vol.Coerce(int), vol.Range(min = 0, max = 180)),
 
                     vol.Required(
-                        CONF_PLAYBACK_MONTHS,
-                        default = self.config_entry.options.get(CONF_PLAYBACK_MONTHS, DEFAULT_PLAYBACK_MONTHS),
+                        CONF_PLAYBACK_DAYS,
+                        default = self.config_entry.options.get(CONF_PLAYBACK_DAYS, DEFAULT_PLAYBACK_DAYS),
                     ): cv.positive_int,
 
                     vol.Optional(

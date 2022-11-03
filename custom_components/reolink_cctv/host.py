@@ -36,8 +36,8 @@ from reolink_ip.api         import (
 
 from .const import (
     MOTION_COMMON_TYPE,
-    CONF_PLAYBACK_MONTHS,
-    DEFAULT_PLAYBACK_MONTHS,
+    CONF_PLAYBACK_DAYS,
+    DEFAULT_PLAYBACK_DAYS,
     CONF_USE_HTTPS,
     CONF_CHANNELS,
     CONF_MOTION_OFF_DELAY,
@@ -126,7 +126,7 @@ class ReolinkHost:
 
         self.motion_off_delay: int                  = DEFAULT_MOTION_OFF_DELAY if CONF_MOTION_OFF_DELAY not in options else options[CONF_MOTION_OFF_DELAY]
         self.motion_force_off: int                  = DEFAULT_MOTION_FORCE_OFF if CONF_MOTION_FORCE_OFF not in options else options[CONF_MOTION_FORCE_OFF]
-        self.playback_months: int                   = DEFAULT_PLAYBACK_MONTHS if CONF_PLAYBACK_MONTHS not in options else options[CONF_PLAYBACK_MONTHS]
+        self.playback_days: int                     = DEFAULT_PLAYBACK_DAYS if CONF_PLAYBACK_DAYS not in options else options[CONF_PLAYBACK_DAYS]
         self._thumbnail_path: Optional[str]         = None
         self.subscription_watchdog_interval: int    = DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL if CONF_SUBSCRIPTION_WATCHDOG_INTERVAL not in options else options[CONF_SUBSCRIPTION_WATCHDOG_INTERVAL]
 
@@ -245,9 +245,9 @@ class ReolinkHost:
         if end is None:
             end = current_time
         if start is None:
-            start = dt.datetime.combine(end.date().replace(day = 1), dt.time.min)
-            if self.playback_months > 1:
-                start -= relativedelta(months = int(self.playback_months))
+            start = dt.datetime.combine(end.date(), dt.time.min)
+            if self.playback_days > 0:
+                start -= relativedelta(days = int(self.playback_days))
 
         directory = os.path.join(self.thumbnail_path, f"{channel}")
 
@@ -272,7 +272,7 @@ class ReolinkHost:
 
     async def cleanup_vod_thumbnails(self, channel: int):
         """ Cleanup older thumbnail files """
-        start = dt_util.now() - relativedelta(months = int(self.playback_months))
+        start = dt_util.now() - relativedelta(days = int(self.playback_days))
 
         start_date_timestamp = start.timestamp()
         directory = os.path.join(self.thumbnail_path, f"{channel}")

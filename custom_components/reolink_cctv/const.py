@@ -22,7 +22,7 @@ CONF_PROTOCOL                           = "protocol"
 CONF_CHANNELS                           = "channels"
 CONF_MOTION_OFF_DELAY                   = "motion_off_delay"
 CONF_MOTION_FORCE_OFF                   = "motion_force_off"
-CONF_PLAYBACK_MONTHS                    = "playback_months"
+CONF_PLAYBACK_DAYS                      = "playback_days"
 CONF_THUMBNAIL_PATH                     = "playback_thumbnail_path"
 CONF_SUBSCRIPTION_WATCHDOG_INTERVAL     = "subscription_watchdog_interval"
 
@@ -38,7 +38,7 @@ DEFAULT_STREAM_FORMAT                   = "h264"
 DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL  = 60
 
 DEFAULT_TIMEOUT                         = 60
-DEFAULT_PLAYBACK_MONTHS                 = 1
+DEFAULT_PLAYBACK_DAYS                   = 10
 DEFAULT_THUMBNAIL_OFFSET                = 6
 
 SUPPORT_PTZ                             = 1024

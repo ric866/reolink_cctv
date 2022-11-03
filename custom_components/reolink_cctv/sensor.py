@@ -173,9 +173,9 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
         end = dt_utils.now()
         start   = self._attrs.most_recent_day
         if not start:
-            start = dt.datetime.combine(end.date().replace(day = 1), dt.time.min)
-            if self._host.playback_months > 1:
-                start -= relativedelta.relativedelta(months = int(self._host.playback_months))
+            start = dt.datetime.combine(end.date(), dt.time.min)
+            if self._host.playback_days > 0:
+                start -= relativedelta.relativedelta(days = int(self._host.playback_days))
 
         search, _ = await self._host.api.request_vod_files(self._channel, start, end, True)
         if not search or len(search) < 1:

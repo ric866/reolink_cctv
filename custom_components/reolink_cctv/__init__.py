@@ -23,7 +23,7 @@ from .const import (
     CONF_EXTERNAL_PORT,
     CONF_MOTION_OFF_DELAY,
     CONF_MOTION_FORCE_OFF,
-    CONF_PLAYBACK_MONTHS,
+    CONF_PLAYBACK_DAYS,
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_THUMBNAIL_PATH,
@@ -34,7 +34,7 @@ from .const import (
     DEFAULT_PROTOCOL,
     DEFAULT_MOTION_FORCE_OFF,
     DEFAULT_MOTION_OFF_DELAY,
-    DEFAULT_PLAYBACK_MONTHS,
+    DEFAULT_PLAYBACK_DAYS,
     DEFAULT_STREAM,
     DEFAULT_STREAM_FORMAT,
     DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
@@ -156,7 +156,7 @@ async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry):
 
     host.motion_off_delay   = entry.options.get(CONF_MOTION_OFF_DELAY, DEFAULT_MOTION_OFF_DELAY)
     host.motion_force_off   = entry.options.get(CONF_MOTION_FORCE_OFF, DEFAULT_MOTION_FORCE_OFF)
-    host.playback_months    = entry.options.get(CONF_PLAYBACK_MONTHS, DEFAULT_PLAYBACK_MONTHS)
+    host.playback_days      = entry.options.get(CONF_PLAYBACK_DAYS, DEFAULT_PLAYBACK_DAYS)
     host.thumbnail_path     = hass.config.path(f"{STORAGE_DIR}/{DOMAIN}/{entry.unique_id}") if (CONF_THUMBNAIL_PATH not in entry.options or not entry.options[CONF_THUMBNAIL_PATH]) else entry.options[CONF_THUMBNAIL_PATH]
     host.api.external_host  = entry.options.get(CONF_EXTERNAL_HOST, DEFAULT_EXTERNAL_HOST)
     host.api.external_port  = entry.options.get(CONF_EXTERNAL_PORT, DEFAULT_EXTERNAL_PORT)

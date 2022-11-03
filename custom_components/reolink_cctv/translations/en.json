@@ -37,7 +37,7 @@
                     "subscription_watchdog_interval": "Subscription watchdog-timer interval (seconds, 0 or less to disable).\nReolink's event-subscription is not always reliable. This will check it with this interval, and if subscription got not active - will force-update sensors. The less this value is - the less resources of your HA will be spent. Better to set this value to 0 if your subscription is robust enough.",
                     "motion_off_delay": "Motion sensor off delay (seconds)",
                     "motion_force_off": "Motion sensor force-off timeout (seconds)",
-                    "playback_months": "Playback range (months)",
+                    "playback_days": "Playback range (days)",
                     "playback_thumbnails": "Create thumbnails for playback items",
                     "playback_thumbnail_path": "Custom thumbnail path"
                 }

@@ -263,9 +263,9 @@ class ReolinkMediaSource(MediaSource):
 
             children    = []
             end_date    = dt_utils.now()
-            start_date  = dt.datetime.combine(end_date.date().replace(day = 1), dt.time.min)
-            if host.playback_months > 1:
-                start_date -= relativedelta.relativedelta(months = int(host.playback_months))
+            start_date  = dt.datetime.combine(end_date.date(), dt.time.min)
+            if host.playback_days > 0:
+                start_date -= relativedelta.relativedelta(days = int(host.playback_days))
 
             # Cleanup older thumbnail files, to not overfill the drive...
             start_date_timestamp = start_date.timestamp()
