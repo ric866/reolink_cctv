@@ -175,7 +175,7 @@ async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.debug("ONVIF-subscription watchdog disabled.")
         else:
             coordinator_subscription_watchdog.update_interval = timedelta(seconds = host.subscription_watchdog_interval)
-            _LOGGER.debug("ONVIF-subscription watchdog interval changed to %s seconds.", coordinator_subscription_watchdog.update_interval)
+            _LOGGER.debug("ONVIF-subscription watchdog interval changed to %s seconds.", coordinator_subscription_watchdog.update_interval.seconds)
         await coordinator_subscription_watchdog.async_refresh()
 #endof entry_update_listener()
 

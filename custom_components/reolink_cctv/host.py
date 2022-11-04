@@ -212,6 +212,7 @@ class ReolinkHost:
     async def stop(self):
         """Disconnect the API and deregister the event listener."""
         await self.disconnect()
+        await self.unregister_webhook()
         for func in self.async_functions:
             await func()
         for func in self.sync_functions:
@@ -331,9 +332,25 @@ class ReolinkHost:
 
 
     async def register_webhook(self) -> bool:
-        self._webhook_id    = f"reolink_{self.api.nvr_name}_webhook"#self._hass.components.webhook.async_generate_id()
+        device_name: str = self.api.nvr_name
+        if not device_name:
+            _LOGGER.error("Error registering a webhook for %s:%s: the device name is empty.", self.api.host, self.api.port)
+            self._event_id      = None
+            self._webhook_id    = None
+            self._webhook_url   = None
+            return False
+
+        no_spaces_name      = device_name.replace(" ", "_")
+        self._webhook_id    = f"reolink_{no_spaces_name}_webhook"#self._hass.components.webhook.async_generate_id()
         self._event_id      = self._webhook_id
-        self._hass.components.webhook.async_register(DOMAIN, self._event_id, self._webhook_id, handle_webhook)
+        try:
+            self._hass.components.webhook.async_register(DOMAIN, self._event_id, self._webhook_id, handle_webhook)
+        except ValueError:
+            _LOGGER.error("Error registering a webhook %s for %s: maybe a duplicate device-name in your setup?", self._webhook_id, self.api.nvr_name)
+            self._event_id      = None
+            self._webhook_id    = None
+            self._webhook_url   = None
+            return False
 
         try:
             self._webhook_url = "{}{}".format(
@@ -364,8 +381,9 @@ class ReolinkHost:
 
     async def unregister_webhook(self):
         """Unregister the webhook for motion events."""
-        _LOGGER.info("Unregistering webhook %s", self._webhook_id)
-        self._hass.components.webhook.async_unregister(self._webhook_id)
+        if self._webhook_id:
+            _LOGGER.info("Unregistering webhook %s", self._webhook_id)
+            self._hass.components.webhook.async_unregister(self._webhook_id)
         self._event_id      = None
         self._webhook_id    = None
         self._webhook_url   = None

@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.25  %}
+- Fixed a regression bug, introduced with new features in **0.0.24**.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.24  %}
 - Implemented doorbell-cameras support: visitor sensor is now available for such cameras. The sensor will trigger when a "Visitor" ONVIF-notification is sent by a camera.
 - Changed the "Playback range" setting to be in **days** instead of in months. This allows more precise control over amount of storage spent on a drive for all the thumbnails of all cameras' motion events. Please re-check this setting after updating to **0.0.24**. And don't forget to setup a periodic action that calls `cleanup_thumbnails` service of this integration.  
