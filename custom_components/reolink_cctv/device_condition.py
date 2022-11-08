@@ -4,7 +4,7 @@
 from    typing      import cast
 import  voluptuous  as vol
 
-from homeassistant.core                     import HomeAssistant
+from homeassistant.core                     import HomeAssistant, callback
 from homeassistant.helpers                  import condition, config_validation as cv
 from homeassistant.components.sensor        import DOMAIN                       as SENSOR_DOMAIN
 from homeassistant.helpers.typing           import ConfigType, TemplateVarsType
@@ -89,7 +89,8 @@ async def async_get_conditions(hass: HomeAssistant, device_id: str):
 ##########################################################################################################################################################
 #
 ##########################################################################################################################################################
-async def async_condition_from_config(config: ConfigType, config_validation: bool) -> condition.ConditionCheckerType:
+@callback
+def async_condition_from_config(config: ConfigType, config_validation: bool) -> condition.ConditionCheckerType:
     """Create a function to test an NVR/camera device condition."""
 
     if config_validation:
