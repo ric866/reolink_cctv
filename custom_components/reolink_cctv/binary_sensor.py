@@ -364,6 +364,8 @@ class ObjectDetectedSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
     # Methods
     async def handle_event(self, event):
         """Handle incoming event for AI motion detection."""
+        if not self.enabled:
+            return
 
         ai_refresh_event_state      = None
         event_state                 = None
