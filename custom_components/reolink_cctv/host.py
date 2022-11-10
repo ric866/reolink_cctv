@@ -204,15 +204,30 @@ class ReolinkHost:
 
     async def disconnect(self):
         """Disconnect from the API, so the connection will be released."""
-        await self._api.unsubscribe_all()
-        await self._api.logout()
+        try:
+            await self._api.unsubscribe_all()
+        except Exception as e:
+            err = str(e)
+            if err:
+                _LOGGER.error("Error while unsubscribing ONVIF events for %s: %s", self._api.nvr_name, err)
+            else:
+                _LOGGER.error("Unknown error while unsubscribing ONVIF events for %s.", self._api.nvr_name)
+
+        try:
+            await self._api.logout()
+        except Exception as e:
+            err = str(e)
+            if err:
+                _LOGGER.error("Error while logging out of %s: %s", self._api.nvr_name, err)
+            else:
+                _LOGGER.error("Unknown error while logging out of %s.", self._api.nvr_name)
     #endof disconnect()
 
 
     async def stop(self):
         """Disconnect the API and deregister the event listener."""
-        await self.disconnect()
         await self.unregister_webhook()
+        await self.disconnect()
         for func in self.async_functions:
             await func()
         for func in self.sync_functions:
@@ -346,7 +361,36 @@ class ReolinkHost:
         try:
             self._hass.components.webhook.async_register(DOMAIN, self._event_id, self._webhook_id, handle_webhook)
         except ValueError:
-            _LOGGER.error("Error registering a webhook %s for %s: maybe a duplicate device-name in your setup?", self._webhook_id, self.api.nvr_name)
+            _LOGGER.debug("Error registering webhook %s. Trying to unregister it first and re-register again.", self._webhook_id)
+            try:
+                self._hass.components.webhook.async_unregister(self._webhook_id)
+            except Exception as e:
+                _LOGGER.debug("Error unregistering webhook %s: %s", self._webhook_id, str(e))
+
+            try:
+                self._hass.components.webhook.async_register(DOMAIN, self._event_id, self._webhook_id, handle_webhook)
+            except ValueError:
+                _LOGGER.error("Error registering a webhook %s for %s: maybe a duplicate device-name in your setup?", self._webhook_id, device_name)
+                self._event_id      = None
+                self._webhook_id    = None
+                self._webhook_url   = None
+                return False
+            except Exception as e:
+                err = str(e)
+                if err:
+                    _LOGGER.error("Error registering a webhook %s for %s: %s", self._webhook_id, device_name, err)
+                else:
+                    _LOGGER.error("Unknown error registering a webhook %s for %s.", self._webhook_id, device_name)
+                self._event_id      = None
+                self._webhook_id    = None
+                self._webhook_url   = None
+                return False
+        except Exception as e:
+            err = str(e)
+            if err:
+                _LOGGER.error("Error registering a webhook %s for %s: %s", self._webhook_id, device_name, err)
+            else:
+                _LOGGER.error("Unknown error registering a webhook %s for %s.", self._webhook_id, device_name)
             self._event_id      = None
             self._webhook_id    = None
             self._webhook_url   = None
@@ -368,11 +412,43 @@ class ReolinkHost:
                     self._hass.components.webhook.async_generate_path(self._webhook_id),
                 )
             except NoURLAvailableError:
-                self._hass.components.webhook.async_unregister(self._webhook_id)
+                _LOGGER.error("Error registering URL for webhook %s: URL is not available.", self._webhook_id)
+                try:
+                    self._hass.components.webhook.async_unregister(self._webhook_id)
+                except Exception as e:
+                    _LOGGER.debug("Error unregistering webhook %s: %s", self._webhook_id, str(e))
                 self._event_id      = None
                 self._webhook_id    = None
                 self._webhook_url   = None
                 return False
+            except Exception as e:
+                err = str(e)
+                if err:
+                    _LOGGER.error("Error registering URL for webhook %s: %s", self._webhook_id, err)
+                else:
+                    _LOGGER.error("Unknown error registering URL for webhook %s.", self._webhook_id)
+                try:
+                    self._hass.components.webhook.async_unregister(self._webhook_id)
+                except Exception as e:
+                    _LOGGER.debug("Error unregistering webhook %s: %s", self._webhook_id, str(e))
+                self._event_id      = None
+                self._webhook_id    = None
+                self._webhook_url   = None
+                return False
+        except Exception as e:
+            err = str(e)
+            if err:
+                _LOGGER.error("Error registering URL for webhook %s: %s", self._webhook_id, err)
+            else:
+                _LOGGER.error("Unknown error registering URL for webhook %s.", self._webhook_id)
+            try:
+                self._hass.components.webhook.async_unregister(self._webhook_id)
+            except Exception as e:
+                _LOGGER.debug("Error unregistering webhook %s: %s", self._webhook_id, str(e))
+            self._event_id      = None
+            self._webhook_id    = None
+            self._webhook_url   = None
+            return False
 
         _LOGGER.info("Registered webhook: %s.", self._webhook_id)
         return True
@@ -383,7 +459,10 @@ class ReolinkHost:
         """Unregister the webhook for motion events."""
         if self._webhook_id:
             _LOGGER.info("Unregistering webhook %s", self._webhook_id)
-            self._hass.components.webhook.async_unregister(self._webhook_id)
+            try:
+                self._hass.components.webhook.async_unregister(self._webhook_id)
+            except Exception as e:
+                _LOGGER.debug("Error unregistering webhook %s: %s", self._webhook_id, str(e))
         self._event_id      = None
         self._webhook_id    = None
         self._webhook_url   = None

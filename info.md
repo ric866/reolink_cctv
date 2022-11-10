@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.27  %}
+- Few stability and error-logging improvements...
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.26  %}
 - Improvements in `reolink-ip` library: workaround for Reolink Logout command bug that affects some camera models.  
 Be prepared that after some sudden power failure or HA crash, your Reolink device may not allow the component to login before the previous session expires (might take even an hour). So the component's initialization in HA might keep failing during all this period, with HA logging errors from time to time...

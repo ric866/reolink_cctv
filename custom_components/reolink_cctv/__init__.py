@@ -83,10 +83,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     try:
         if not await host.init():
-            raise ConfigEntryNotReady(f"Error while trying to setup {host.api._host}:{host.api._port}: failed to obtain required data from device.")
+            raise ConfigEntryNotReady(f"Error while trying to setup {host.api._host}:{host.api._port}: failed to obtain data from device.")
     except Exception as e:
         err = str(e)
-        raise ConfigEntryNotReady(f"Error while trying to setup {host.api._host}:{host.api._port}: failed to connect to device: \"{err}\".")
+        if err:
+            raise ConfigEntryNotReady(f"Error while trying to setup {host.api._host}:{host.api._port}: \"{err}\".")
+        else:
+            raise ConfigEntryNotReady(f"Error while trying to setup {host.api._host}:{host.api._port}: failed to connect to device.")
 
     host.sync_functions.append(entry.add_update_listener(entry_update_listener))
 

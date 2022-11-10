@@ -139,17 +139,37 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
     async def async_obtain_host_settings(self, hass: core.HomeAssistant, user_input: dict):
         host = ReolinkHost(hass, user_input)
 
-        if not await host.init():
-            host.stop()
+        try:
+            if not await host.init():
+                _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: failed to obtain data from device.")
+                try:
+                    host.stop()
+                except:
+                    pass
+                host = None
+                raise CannotConnect
+        except Exception as e:
+            err = str(e)
+            if err:
+                _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: \"{err}\".")
+            else:
+                _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: failed to connect to device.")
+            try:
+                host.stop()
+            except:
+                pass
             host = None
             raise CannotConnect
 
         title               = host.api.nvr_name
+        self.host_name      = title
         self.num_channels   = host.api.num_channels
         unique_id           = host.unique_id
-        self.host_name      = host.api.nvr_name
 
-        host.stop()
+        try:
+            host.stop()
+        except:
+            pass
         host = None
 
         return {"title": title, "id": unique_id}
