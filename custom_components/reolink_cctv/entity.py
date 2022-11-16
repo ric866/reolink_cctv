@@ -24,13 +24,14 @@ class ReolinkCoordinatorEntity(CoordinatorEntity):
     def device_info(self):
         """Information about this entity/device."""
         return {
-            "identifiers":  {(DOMAIN, self._host.unique_id)},
-            "connections":  {(CONNECTION_NETWORK_MAC, self._host.api.mac_address)},
-            "name":         self._host.api.nvr_name,
-            "sw_version":   self._host.api.sw_version,
-            "model":        self._host.api.model,
-            "manufacturer": self._host.api.manufacturer,
-            "channels":     self._host.api.num_channels,
+            "identifiers":          {(DOMAIN, self._host.unique_id)},
+            "connections":          {(CONNECTION_NETWORK_MAC, self._host.api.mac_address)},
+            "name":                 self._host.api.nvr_name,
+            "sw_version":           self._host.api.sw_version,
+            "model":                self._host.api.model,
+            "manufacturer":         self._host.api.manufacturer,
+            "channels":             self._host.api.num_channels,
+            "configuration_url":    f"https://{self._host.api._host}:{self._host.api._port}" if self._host.api._use_https else f"http://{self._host.api._host}:{self._host.api._port}"
         }
     #endof device_info
 
