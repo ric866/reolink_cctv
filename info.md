@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.29  %}
+- Few fixes of spotlight switching functionality in the `reolink-ip` lib.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.28  %}
 - Fixed a bug: snapshots still recorded when "last record" sensor was disabled.
 - Implemented the "Visit device" link in the device card to allow to visit the NVR/camera for configuration or diagnostics.
