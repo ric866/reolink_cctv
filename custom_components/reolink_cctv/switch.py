@@ -320,7 +320,6 @@ class SpotLightSwitch(ReolinkCoordinatorEntity, ToggleEntity):
         # Uses a call to a simple turn on routine which sets night mode on, auto, 100% bright.
 
         await self._host.api.set_spotlight(0 if self._channel is None else self._channel, True)
-        await self._host.api.get_state("GetWhiteLed")
         await self.request_refresh()
     #endof async_turn_on()
 
@@ -328,7 +327,6 @@ class SpotLightSwitch(ReolinkCoordinatorEntity, ToggleEntity):
     async def async_turn_off(self, **kwargs):
         """Disable spotlight."""
         await self._host.api.set_spotlight(0 if self._channel is None else self._channel, False)
-        await self._host.api.get_state("GetWhiteLed")
         await self.request_refresh()
     #endof async_turn_off()
 
