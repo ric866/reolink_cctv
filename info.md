@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.31  %}
+- Improvements in spotlight-switch state synchronization.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.30  %}
 - More fixes of spotlight switching functionality in the `reolink-ip` lib.
 {% endif %}
