@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.34  %}
+- Fixed a regression in `reolink-ip` lib, related to **0.0.33** improvements.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.33  %}
 - Implemented the support of channels' auto-population for multi-channel devices. No need to select the channels anymore when adding a new integration-entry.  
 You still need to restart HA after connecting/disconnecting cameras to/from your NVR, for the integration to see the changes.
