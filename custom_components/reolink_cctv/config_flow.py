@@ -20,7 +20,6 @@ from .host import ReolinkHost
 from .const import (
     CONF_EXTERNAL_HOST,
     CONF_EXTERNAL_PORT,
-    CONF_CHANNELS,
     CONF_USE_HTTPS,
     CONF_MOTION_OFF_DELAY,
     CONF_MOTION_FORCE_OFF,
@@ -78,10 +77,8 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
                 await self.async_set_unique_id(self.info["id"])
                 self._abort_if_unique_id_configured()
 
-                if self.num_channels > 1:
-                    return await self.async_step_nvr()
-
-                self.data[CONF_CHANNELS] = [0]
+                #if self.num_channels > 1:
+                #    return await self.async_step_nvr()
 
                 return self.async_create_entry(title = self.info["title"], data = self.data)
 
@@ -113,27 +110,27 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
     #endof async_step_user()
 
 
-    async def async_step_nvr(self, user_input = None):
-        """Configure a NVR with multiple channels."""
-        errors = {}
-        if user_input is not None:
-            self.data.update(user_input)
-            return self.async_create_entry(title = self.host_name, data = self.data)
+    # async def async_step_nvr(self, user_input = None):
+    #     """Configure a NVR with multiple channels."""
+    #     errors = {}
+    #     if user_input is not None:
+    #         self.data.update(user_input)
+    #         return self.async_create_entry(title = self.host_name, data = self.data)
 
-        all_channels_defaults = []
-        all_channels = [e for e in range(self.num_channels)]
-        return self.async_show_form(
-            step_id = "nvr",
-            data_schema = vol.Schema(
-                {
-                    vol.Optional(CONF_CHANNELS, default = list(all_channels_defaults)): cv.multi_select(
-                        all_channels
-                    ),
-                }
-            ),
-            errors = errors,
-        )
-    #endof async_step_nvr()
+    #     all_channels_defaults = []
+    #     all_channels = [e for e in range(self.num_channels)]
+    #     return self.async_show_form(
+    #         step_id = "nvr",
+    #         data_schema = vol.Schema(
+    #             {
+    #                 vol.Optional(CONF_CHANNELS, default = list(all_channels_defaults)): cv.multi_select(
+    #                     all_channels
+    #                 ),
+    #             }
+    #         ),
+    #         errors = errors,
+    #     )
+    # #endof async_step_nvr()
 
 
     async def async_obtain_host_settings(self, hass: core.HomeAssistant, user_input: dict):

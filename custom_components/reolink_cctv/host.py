@@ -39,7 +39,6 @@ from .const import (
     CONF_PLAYBACK_DAYS,
     DEFAULT_PLAYBACK_DAYS,
     CONF_USE_HTTPS,
-    CONF_CHANNELS,
     CONF_MOTION_OFF_DELAY,
     CONF_MOTION_FORCE_OFF,
     CONF_PROTOCOL,
@@ -96,8 +95,7 @@ class ReolinkHost:
         self.sensor_pet_detection:      Optional[ObjectDetectedSensor]  = dict()
         self.sensor_visitor_detection:  Optional[VisitorSensor]         = dict()
 
-        channels = (DEFAULT_CHANNELS if CONF_CHANNELS not in config else config[CONF_CHANNELS])
-        self.motion_detection_enabled : bool = {c: True for c in channels}
+        self.motion_detection_enabled: Optional[list(bool)] = None
 
         use_https = DEFAULT_USE_HTTPS
         if CONF_USE_HTTPS in config:
@@ -114,7 +112,6 @@ class ReolinkHost:
             config[CONF_USERNAME],
             config[CONF_PASSWORD],
             use_https = use_https,
-            channels = channels,
             stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM]),
             stream_format = (DEFAULT_STREAM_FORMAT if CONF_STREAM_FORMAT not in options else options[CONF_STREAM_FORMAT]),
             protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL]),
@@ -176,6 +173,13 @@ class ReolinkHost:
             #await self._api.is_admin()
             if self._api.mac_address is None:
                 return False
+
+            if not self._api.onvif_enabled:
+                _LOGGER.info("ONVIF is disabled on %s, trying to enable it...", self._api.nvr_name)
+                if not await self._api.set_net_port(True):
+                    _LOGGER.error("Unable to switch on ONVIF on %s. You need it to be ON to receive notifications.", self._api.nvr_name)
+
+            self.motion_detection_enabled = {c: True for c in self._api.channels}
 
             if self._unique_id is None: # Don't change it on-the-fly after the entry-ID got already initialized with current value
                 self._unique_id = self._api.mac_address.replace(":", "")

@@ -12,7 +12,6 @@ from homeassistant.components.ffmpeg    import DATA_FFMPEG
 from homeassistant.helpers              import config_validation as cv, entity_platform
 
 from .const import (
-    CONF_CHANNELS,
     DOMAIN,
     DOMAIN_DATA,
     HOST,
@@ -27,6 +26,7 @@ from .const import (
 )
 from .entity  import ReolinkCoordinatorEntity
 from .typings import VoDRecord
+from .host    import ReolinkHost
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,10 +83,10 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
         [SUPPORT_PLAYBACK],
     )
 
-    host = hass.data[DOMAIN][config_entry.entry_id][HOST]
+    host: ReolinkHost = hass.data[DOMAIN][config_entry.entry_id][HOST]
 
     cameras = []
-    for channel in config_entry.data[CONF_CHANNELS]:
+    for channel in host.api.channels:
         camera = ReolinkCamera(hass, config_entry, channel)
         host.cameras[channel] = camera
         cameras.append(camera)
@@ -163,7 +163,7 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
 
     @property
     def motion_detection_enabled(self):
-        return self._host.motion_detection_enabled[self._channel]
+        return self._host.motion_detection_enabled and self._channel in self._host.motion_detection_enabled and self._host.motion_detection_enabled[self._channel]
 
 
     @property
@@ -295,9 +295,11 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
 
     async def async_enable_motion_detection(self):
         """Predefined camera service implementation."""
-        self._host.motion_detection_enabled[self._channel] = True
+        if self._host.motion_detection_enabled:
+            self._host.motion_detection_enabled[self._channel] = True
 
     async def async_disable_motion_detection(self):
         """Predefined camera service implementation."""
-        self._host.motion_detection_enabled[self._channel] = False
+        if self._host.motion_detection_enabled:
+            self._host.motion_detection_enabled[self._channel] = False
 #endof class ReolinkCamera
