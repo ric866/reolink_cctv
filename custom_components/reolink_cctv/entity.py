@@ -17,12 +17,24 @@ class ReolinkCoordinatorEntity(CoordinatorEntity):
         self._host: ReolinkHost = hass.data[DOMAIN][config.entry_id][HOST]
         self._hass              = hass
         self._state             = False
+        self._channel           = None
     #endof __init__()
 
 
     @property
     def device_info(self):
         """Information about this entity/device."""
+        conf_url = f"https://{self._host.api._host}:{self._host.api._port}" if self._host.api._use_https else f"http://{self._host.api._host}:{self._host.api._port}"
+        if self._host.api.is_nvr and self._channel is not None:
+            return {
+                "identifiers":          {(DOMAIN, f"{self._host.unique_id}_ch{self._channel}")},
+                "via_device":           (DOMAIN, self._host.unique_id)
+                "name":                 self._host.api.camera_name(self._channel),
+                "model":                self._host.api.camera_model(self._channel),
+                "manufacturer":         self._host.api.manufacturer,
+                "configuration_url":    conf_url
+            }
+
         return {
             "identifiers":          {(DOMAIN, self._host.unique_id)},
             "connections":          {(CONNECTION_NETWORK_MAC, self._host.api.mac_address)},
@@ -31,7 +43,7 @@ class ReolinkCoordinatorEntity(CoordinatorEntity):
             "hw_version":           self._host.api.hardware_version,
             "model":                self._host.api.model,
             "manufacturer":         self._host.api.manufacturer,
-            "configuration_url":    f"https://{self._host.api._host}:{self._host.api._port}" if self._host.api._use_https else f"http://{self._host.api._host}:{self._host.api._port}"
+            "configuration_url":    conf_url
         }
     #endof device_info
 
