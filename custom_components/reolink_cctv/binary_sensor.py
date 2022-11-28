@@ -46,15 +46,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
         if host.api.is_ia_enabled(c):
             _LOGGER.debug("Camera %s (channel %s, device model %s) is AI-enabled so object detection sensors will be created.", host.api.camera_name(c), c, host.api.model)
 
-            host.sensor_face_detection[c]       = ObjectDetectedSensor(hass, config_entry, FACE_DETECTION_TYPE, c)
-            host.sensor_person_detection[c]     = ObjectDetectedSensor(hass, config_entry, PERSON_DETECTION_TYPE, c)
-            host.sensor_vehicle_detection[c]    = ObjectDetectedSensor(hass, config_entry, VEHICLE_DETECTION_TYPE, c)
-            host.sensor_pet_detection[c]        = ObjectDetectedSensor(hass, config_entry, PET_DETECTION_TYPE, c)
-
-            new_sensors.append(host.sensor_face_detection[c])
-            new_sensors.append(host.sensor_person_detection[c])
-            new_sensors.append(host.sensor_vehicle_detection[c])
-            new_sensors.append(host.sensor_pet_detection[c])
+            if host.api.ai_supported(c, FACE_DETECTION_TYPE):
+                host.sensor_face_detection[c]       = ObjectDetectedSensor(hass, config_entry, FACE_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_face_detection[c])
+            if host.api.ai_supported(c, PERSON_DETECTION_TYPE):
+                host.sensor_person_detection[c]     = ObjectDetectedSensor(hass, config_entry, PERSON_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_person_detection[c])
+            if host.api.ai_supported(c, VEHICLE_DETECTION_TYPE):
+                host.sensor_vehicle_detection[c]    = ObjectDetectedSensor(hass, config_entry, VEHICLE_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_vehicle_detection[c])
+            if host.api.ai_supported(c, PET_DETECTION_TYPE):
+                host.sensor_pet_detection[c]        = ObjectDetectedSensor(hass, config_entry, PET_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_pet_detection[c])
 
         if host.api.is_doorbell_enabled(c):
             _LOGGER.debug("Camera %s (channel %s, device model %s) supports doorbell so visitor sensors will be created.", host.api.camera_name(c), c, host.api.model)
