@@ -28,11 +28,11 @@ class ReolinkCoordinatorEntity(CoordinatorEntity):
         if self._host.api.is_nvr and self._channel is not None:
             return {
                 "identifiers":          {(DOMAIN, f"{self._host.unique_id}_ch{self._channel}")},
-                "via_device":           (DOMAIN, self._host.unique_id)
+                "via_device":           (DOMAIN, self._host.unique_id),
                 "name":                 self._host.api.camera_name(self._channel),
                 "model":                self._host.api.camera_model(self._channel),
                 "manufacturer":         self._host.api.manufacturer,
-                "configuration_url":    conf_url
+                "configuration_url":    conf_url,
             }
 
         return {
@@ -43,7 +43,7 @@ class ReolinkCoordinatorEntity(CoordinatorEntity):
             "hw_version":           self._host.api.hardware_version,
             "model":                self._host.api.model,
             "manufacturer":         self._host.api.manufacturer,
-            "configuration_url":    conf_url
+            "configuration_url":    conf_url,
         }
     #endof device_info
 
