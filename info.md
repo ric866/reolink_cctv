@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.37  %}
+- Only supported AI motion-sensors are now available for cameras/channels.
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.36  %}
 - Fixed regression in `reolink-ip` lib, happening on some older devices (e.g. RLN8-410-E).
 {% endif %}

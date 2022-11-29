@@ -46,15 +46,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
         if host.api.is_ia_enabled(c):
             _LOGGER.debug("Camera %s (channel %s, device model %s) is AI-enabled so object detection sensors will be created.", host.api.camera_name(c), c, host.api.camera_model(c))
 
-            host.sensor_face_detection[c]       = ObjectDetectedSensor(hass, config_entry, FACE_DETECTION_TYPE, c)
-            host.sensor_person_detection[c]     = ObjectDetectedSensor(hass, config_entry, PERSON_DETECTION_TYPE, c)
-            host.sensor_vehicle_detection[c]    = ObjectDetectedSensor(hass, config_entry, VEHICLE_DETECTION_TYPE, c)
-            host.sensor_pet_detection[c]        = ObjectDetectedSensor(hass, config_entry, PET_DETECTION_TYPE, c)
-
-            new_sensors.append(host.sensor_face_detection[c])
-            new_sensors.append(host.sensor_person_detection[c])
-            new_sensors.append(host.sensor_vehicle_detection[c])
-            new_sensors.append(host.sensor_pet_detection[c])
+            if host.api.ai_supported(c, FACE_DETECTION_TYPE):
+                host.sensor_face_detection[c]       = ObjectDetectedSensor(hass, config_entry, FACE_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_face_detection[c])
+            if host.api.ai_supported(c, PERSON_DETECTION_TYPE):
+                host.sensor_person_detection[c]     = ObjectDetectedSensor(hass, config_entry, PERSON_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_person_detection[c])
+            if host.api.ai_supported(c, VEHICLE_DETECTION_TYPE):
+                host.sensor_vehicle_detection[c]    = ObjectDetectedSensor(hass, config_entry, VEHICLE_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_vehicle_detection[c])
+            if host.api.ai_supported(c, PET_DETECTION_TYPE):
+                host.sensor_pet_detection[c]        = ObjectDetectedSensor(hass, config_entry, PET_DETECTION_TYPE, c)
+                new_sensors.append(host.sensor_pet_detection[c])
 
         if host.api.is_doorbell_enabled(c):
             _LOGGER.debug("Camera %s (channel %s, device model %s) supports doorbell so visitor sensors will be created.", host.api.camera_name(c), c, host.api.camera_model(c))
@@ -231,10 +234,14 @@ class MotionSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
             #await self.async_write_ha_state()
 
             if self._host.api.is_ia_enabled(self._channel):
-                await self._host.sensor_face_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
-                await self._host.sensor_person_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
-                await self._host.sensor_vehicle_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
-                await self._host.sensor_pet_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
+                if self._channel in self._host.sensor_face_detection and self._host.sensor_face_detection[self._channel]:
+                    await self._host.sensor_face_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
+                if self._channel in self._host.sensor_person_detection and self._host.sensor_person_detection[self._channel]:
+                    await self._host.sensor_person_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
+                if self._channel in self._host.sensor_vehicle_detection and self._host.sensor_vehicle_detection[self._channel]:
+                    await self._host.sensor_vehicle_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
+                if self._channel in self._host.sensor_pet_detection and self._host.sensor_pet_detection[self._channel]:
+                    await self._host.sensor_pet_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_common_event_state}))
         elif motion_event_state is not None:
             _LOGGER.info("MOTION received %s: %s", motion_event_state, self._host.api.camera_name(self._channel))
 
@@ -267,10 +274,14 @@ class MotionSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
             #await self.async_write_ha_state()
 
             if motion_watchdog_event_state and self._host.api.is_ia_enabled(self._channel):
-                await self._host.sensor_face_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
-                await self._host.sensor_person_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
-                await self._host.sensor_vehicle_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
-                await self._host.sensor_pet_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
+                if self._channel in self._host.sensor_face_detection and self._host.sensor_face_detection[self._channel]:
+                    await self._host.sensor_face_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
+                if self._channel in self._host.sensor_person_detection and self._host.sensor_person_detection[self._channel]:
+                    await self._host.sensor_person_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
+                if self._channel in self._host.sensor_vehicle_detection and self._host.sensor_vehicle_detection[self._channel]:
+                    await self._host.sensor_vehicle_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
+                if self._channel in self._host.sensor_pet_detection and self._host.sensor_pet_detection[self._channel]:
+                    await self._host.sensor_pet_detection[self._channel].handle_event(Event(self._host.event_id, {"ai_refresh": motion_watchdog_event_state}))
 
         await self.register_clear_callback()
     #endof handle_event()

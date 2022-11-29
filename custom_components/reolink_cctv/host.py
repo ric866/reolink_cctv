@@ -88,12 +88,12 @@ class ReolinkHost:
 
         from .binary_sensor import MotionSensor, ObjectDetectedSensor, VisitorSensor
 
-        self.sensor_motion_detection:   Optional[MotionSensor]          = dict()
-        self.sensor_face_detection:     Optional[ObjectDetectedSensor]  = dict()
-        self.sensor_person_detection:   Optional[ObjectDetectedSensor]  = dict()
-        self.sensor_vehicle_detection:  Optional[ObjectDetectedSensor]  = dict()
-        self.sensor_pet_detection:      Optional[ObjectDetectedSensor]  = dict()
-        self.sensor_visitor_detection:  Optional[VisitorSensor]         = dict()
+        self.sensor_motion_detection:   dict[int, MotionSensor]         = dict()
+        self.sensor_face_detection:     dict[int, ObjectDetectedSensor] = dict()
+        self.sensor_person_detection:   dict[int, ObjectDetectedSensor] = dict()
+        self.sensor_vehicle_detection:  dict[int, ObjectDetectedSensor] = dict()
+        self.sensor_pet_detection:      dict[int, ObjectDetectedSensor] = dict()
+        self.sensor_visitor_detection:  dict[int, VisitorSensor]        = dict()
 
         self.motion_detection_enabled: Optional[list(bool)] = None
 
