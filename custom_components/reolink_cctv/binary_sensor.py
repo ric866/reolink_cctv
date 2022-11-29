@@ -44,7 +44,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
         new_sensors.append(host.sensor_motion_detection[c])
 
         if host.api.is_ia_enabled(c):
-            _LOGGER.debug("Camera %s (channel %s, device model %s) is AI-enabled so object detection sensors will be created.", host.api.camera_name(c), c, host.api.model)
+            _LOGGER.debug("Camera %s (channel %s, device model %s) is AI-enabled so object detection sensors will be created.", host.api.camera_name(c), c, host.api.camera_model(c))
 
             host.sensor_face_detection[c]       = ObjectDetectedSensor(hass, config_entry, FACE_DETECTION_TYPE, c)
             host.sensor_person_detection[c]     = ObjectDetectedSensor(hass, config_entry, PERSON_DETECTION_TYPE, c)
@@ -57,7 +57,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
             new_sensors.append(host.sensor_pet_detection[c])
 
         if host.api.is_doorbell_enabled(c):
-            _LOGGER.debug("Camera %s (channel %s, device model %s) supports doorbell so visitor sensors will be created.", host.api.camera_name(c), c, host.api.model)
+            _LOGGER.debug("Camera %s (channel %s, device model %s) supports doorbell so visitor sensors will be created.", host.api.camera_name(c), c, host.api.camera_model(c))
 
             host.sensor_visitor_detection[c] = VisitorSensor(hass, config_entry, c)
             new_sensors.append(host.sensor_visitor_detection[c])
