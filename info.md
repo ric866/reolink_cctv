@@ -11,6 +11,10 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.38  %}
+- Test of a different paradigm: split all entities in separate parent-devices. Mostly for NVR-connection mode, or for multichannel cameras. I did not test it with multichannel cameras though (I don't have one). And I did not test it with direct cameras' connections.  
+Feel free to let me know in discussions, if you would not like this change...
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.37  %}
 - Only supported AI motion-sensors are now available for cameras/channels.
 {% endif %}
