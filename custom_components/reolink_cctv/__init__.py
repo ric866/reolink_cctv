@@ -180,6 +180,15 @@ async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry):
             coordinator_subscription_watchdog.update_interval = timedelta(seconds = host.subscription_watchdog_interval)
             _LOGGER.debug("ONVIF-subscription watchdog interval changed to %s seconds.", coordinator_subscription_watchdog.update_interval.seconds)
         await coordinator_subscription_watchdog.async_refresh()
+
+    if not host.api.rtmp_enabled and host.api.protocol == "rtmp":
+        _LOGGER.info("RTMP is disabled on %s, trying to enable it...", host.api.nvr_name)
+        if not await host.api.set_net_port(enable_rtmp = True):
+            _LOGGER.error("Unable to switch on RTMP on %s. You need it to be ON.", host.api.nvr_name)
+    elif not host.api.rtsp_enabled and host.api.protocol == "rtsp":
+        _LOGGER.info("RTSP is disabled on %s, trying to enable it...", host.api.nvr_name)
+        if not await host.api.set_net_port(enable_rtsp = True):
+            _LOGGER.error("Unable to switch on RTSP on %s. You need it to be ON.", host.api.nvr_name)
 #endof entry_update_listener()
 
 

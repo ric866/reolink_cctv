@@ -174,11 +174,31 @@ class ReolinkHost:
             if self._api.mac_address is None:
                 return False
 
+            enable_onvif = None
+            enable_rtmp  = None
+            enable_rtsp  = None
+
             if not self._api.onvif_enabled:
                 _LOGGER.info("ONVIF is disabled on %s, trying to enable it...", self._api.nvr_name)
-                if not await self._api.set_net_port(True):
-                    _LOGGER.error("Unable to switch on ONVIF on %s. You need it to be ON to receive notifications.", self._api.nvr_name)
+                enable_onvif = True
 
+            if not self._api.rtmp_enabled and self._api.protocol == "rtmp":
+                _LOGGER.info("RTMP is disabled on %s, trying to enable it...", self._api.nvr_name)
+                enable_rtmp = True
+            elif not self._api.rtsp_enabled and self._api.protocol == "rtsp":
+                _LOGGER.info("RTSP is disabled on %s, trying to enable it...", self._api.nvr_name)
+                enable_rtsp = True
+
+            if enable_onvif or enable_rtmp or enable_rtsp:
+                if not await self._api.set_net_port(enable_onvif = enable_onvif, enable_rtmp = enable_rtmp, enable_rtsp = enable_rtsp):
+                    if enable_onvif:
+                        _LOGGER.error("Unable to switch on ONVIF on %s. You need it to be ON to receive notifications.", self._api.nvr_name)
+
+                    if enable_rtmp:
+                        _LOGGER.error("Unable to switch on RTMP on %s. You need it to be ON.", self._api.nvr_name)
+                    elif enable_rtsp:
+                        _LOGGER.error("Unable to switch on RTSP on %s. You need it to be ON.", self._api.nvr_name)
+                
             self.motion_detection_enabled = {c: True for c in self._api.channels}
 
             if self._unique_id is None: # Don't change it on-the-fly after the entry-ID got already initialized with current value
