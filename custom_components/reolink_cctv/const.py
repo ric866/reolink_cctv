@@ -16,7 +16,6 @@ LAST_RECORD                             = "last_record"
 CONF_EXTERNAL_HOST                      = "external_host"
 CONF_EXTERNAL_PORT                      = "external_port"
 CONF_USE_HTTPS                          = "use_https"
-CONF_STREAM                             = "stream"
 CONF_STREAM_FORMAT                      = "stream_format"
 CONF_PROTOCOL                           = "protocol"
 CONF_MOTION_OFF_DELAY                   = "motion_off_delay"
@@ -32,7 +31,6 @@ DEFAULT_CHANNELS                        = [0]
 DEFAULT_MOTION_OFF_DELAY                = 5
 DEFAULT_MOTION_FORCE_OFF                = 0
 DEFAULT_PROTOCOL                        = "rtmp"
-DEFAULT_STREAM                          = "sub"
 DEFAULT_STREAM_FORMAT                   = "h264"
 DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL  = 60
 
