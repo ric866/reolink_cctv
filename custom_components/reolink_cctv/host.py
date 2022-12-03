@@ -43,7 +43,6 @@ from .const import (
     CONF_MOTION_FORCE_OFF,
     CONF_PROTOCOL,
     CONF_STREAM,
-    CONF_STREAM_FORMAT,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_USE_HTTPS,
     DEFAULT_CHANNELS,
@@ -51,7 +50,6 @@ from .const import (
     DEFAULT_MOTION_FORCE_OFF,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
-    DEFAULT_STREAM_FORMAT,
     DEFAULT_TIMEOUT,
     DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DOMAIN,
@@ -113,7 +111,6 @@ class ReolinkHost:
             config[CONF_PASSWORD],
             use_https = use_https,
             stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM]),
-            stream_format = (DEFAULT_STREAM_FORMAT if CONF_STREAM_FORMAT not in options else options[CONF_STREAM_FORMAT]),
             protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL]),
             timeout = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
             aiohttp_get_session_callback = self.get_iohttp_session
