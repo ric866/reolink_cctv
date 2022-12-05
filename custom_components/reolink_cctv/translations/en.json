@@ -12,8 +12,8 @@
             "user": {
                 "data": {
                     "host": "Host",
-                    "port": "Port",
-                    "use_https": "Enable HTTPS",
+                    "port": "Port (optional)",
+                    "use_https": "Enable HTTPS (optional)",
                     "username": "Username",
                     "password": "Password"
                 }

@@ -33,7 +33,6 @@ from .const import (
     DEFAULT_EXTERNAL_PORT,
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
-    DEFAULT_USE_HTTPS,
     DEFAULT_PLAYBACK_DAYS,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
@@ -101,8 +100,8 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
         })
         if errors:
             data_schema = data_schema.extend({
-                vol.Required(CONF_PORT, default = 80): cv.positive_int,
-                vol.Required(CONF_USE_HTTPS, default = DEFAULT_USE_HTTPS): bool,
+                vol.Optional(CONF_PORT): cv.positive_int,
+                vol.Optional(CONF_USE_HTTPS): bool,
             })
 
         return self.async_show_form(
