@@ -129,7 +129,7 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
             raise CannotConnect
         finally:
             try:
-                host.stop()
+                await host.stop()
             except:
                 pass
 
