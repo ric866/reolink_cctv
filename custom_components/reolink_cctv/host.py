@@ -236,7 +236,7 @@ class ReolinkHost:
     #endof disconnect()
 
 
-    async def stop(self):
+    async def stop(self, *args):
         """Disconnect the API and deregister the event listener."""
         await self.unregister_webhook()
         await self.disconnect()
