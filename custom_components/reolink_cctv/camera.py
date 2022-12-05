@@ -87,7 +87,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
 
     cameras = []
     for channel in host.api.channels:
-        streams = ["main", "sub", "images"]
+        streams = ["sub", "main", "images"]
         if host.api.protocol == "rtmp":
             streams.append("ext")
 
@@ -117,7 +117,7 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
 
         self._attr_name = f"{self._host.api.camera_name(self._channel)} {self._stream}"
         self._attr_unique_id = f"reolink_camera_{self._host.unique_id}_{self._channel}_{self._stream}"
-        self._attr_entity_registry_enabled_default = stream == "main"
+        self._attr_entity_registry_enabled_default = stream == "sub"
 
         self._ptz_commands = {
             "AUTO":         "Auto",
