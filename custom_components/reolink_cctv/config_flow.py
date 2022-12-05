@@ -132,7 +132,6 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
                 host.stop()
             except:
                 pass
-            host = None
 
         self.host_name      = host.api.nvr_name
         self.unique_id      = host.unique_id
