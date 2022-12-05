@@ -111,13 +111,14 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
         if self.enabled and channel not in self._host.cameras:
             self._host.cameras[channel] = self
 
+        self._channel = channel
+        self._stream = stream
+        self._ffmpeg = self._hass.data[DATA_FFMPEG]
+
         self._attr_name = f"{self._host.api.camera_name(self._channel)} {self._stream}"
         self._attr_unique_id = f"reolink_camera_{self._host.unique_id}_{self._channel}_{self._stream}"
         self._attr_entity_registry_enabled_default = stream == "main"
 
-        self._channel = channel
-        self._stream = stream
-        self._ffmpeg = self._hass.data[DATA_FFMPEG]
         self._ptz_commands = {
             "AUTO":         "Auto",
             "DOWN":         "Down",
