@@ -95,7 +95,7 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
                 errors[CONF_HOST] = "unknown"
 
         data_schema = vol.Schema({
-            vol.Required(CONF_USERNAME): str,
+            vol.Required(CONF_USERNAME, default = "admin"): str,
             vol.Required(CONF_PASSWORD): str,
             vol.Required(CONF_HOST): str,
         })
