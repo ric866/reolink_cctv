@@ -26,7 +26,6 @@ from .const import (
     CONF_PLAYBACK_DAYS,
     CONF_PROTOCOL,
     CONF_STREAM,
-    CONF_STREAM_FORMAT,
     CONF_THUMBNAIL_PATH,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_EXTERNAL_HOST,
@@ -37,7 +36,6 @@ from .const import (
     DEFAULT_PLAYBACK_DAYS,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
-    DEFAULT_STREAM_FORMAT,
     DEFAULT_TIMEOUT,
     DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DOMAIN
@@ -219,11 +217,6 @@ class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
                         CONF_STREAM,
                         default = self.config_entry.options.get(CONF_STREAM, DEFAULT_STREAM),
                     ): vol.In(["main", "sub", "ext"]),
-
-                    vol.Required(
-                        CONF_STREAM_FORMAT,
-                        default = self.config_entry.options.get(CONF_STREAM_FORMAT, DEFAULT_STREAM_FORMAT),
-                    ): vol.In(["h264", "h265"]),
 
                     vol.Required(
                         CONF_MOTION_OFF_DELAY,

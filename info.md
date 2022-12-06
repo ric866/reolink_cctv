@@ -11,6 +11,9 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 *You already have the latest released version installed.*
 {% endif %}
 
+{% if version_installed.replace("v", "") | float < 0.0.40  %}
+- Stream format option removed (deprecated by Reolink).
+{% endif %}
 {% if version_installed.replace("v", "") | float < 0.0.39  %}
 - Implemented auto-switching RTMP/RTSP, if it is supported by the device.
 {% endif %}
