@@ -256,7 +256,7 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
         self._state = True
 
         self.async_schedule_update_ha_state()
-    #endof _update_event_range()
+    #endof _update_last_record()
 
 
     async def handle_event(self, event):

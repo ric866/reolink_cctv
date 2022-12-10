@@ -104,15 +104,20 @@ class ReolinkHost:
 
         self._clientSession: Optional[aiohttp.ClientSession] = None
         
+        cur_stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM])
+        cur_protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL])
+        if cur_protocol == "rtsp" and cur_stream == "ext":
+            cur_stream = "sub"
+
         self._api = Host(
             config[CONF_HOST],
             config[CONF_PORT],
             config[CONF_USERNAME],
             config[CONF_PASSWORD],
-            use_https = use_https,
-            stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM]),
-            protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL]),
-            timeout = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
+            use_https   = use_https,
+            stream      = cur_stream,
+            protocol    = cur_protocol,
+            timeout     = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
             aiohttp_get_session_callback = self.get_iohttp_session
         )
 

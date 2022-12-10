@@ -211,8 +211,8 @@ class ReolinkOptionsFlowHandler(config_entries.OptionsFlow):
                     vol.Required(
                         CONF_PROTOCOL,
                         default = self.config_entry.options.get(CONF_PROTOCOL, DEFAULT_PROTOCOL),
-                    ): vol.In(["rtmp", "rtsp", "images"]),
-
+                    ): vol.In(["rtmp", "rtsp"]),
+                    
                     vol.Required(
                         CONF_STREAM,
                         default = self.config_entry.options.get(CONF_STREAM, DEFAULT_STREAM),

@@ -87,9 +87,12 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
 
     cameras = []
     for channel in host.api.channels:
-        camera = ReolinkCamera(hass, config_entry, channel)
-        host.cameras[channel] = camera
-        cameras.append(camera)
+        streams = ["sub", "main", "snapshots"]
+        if host.api.protocol == "rtmp":
+            streams.append("ext")
+
+        for stream in streams:
+            cameras.append(ReolinkCamera(hass, config_entry, channel, stream))
 
     async_add_devices(cameras, update_before_add = True)
 #endof async_setup_entry()
@@ -101,14 +104,21 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
 class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
     """An implementation of a Reolink IP camera."""
 
-    def __init__(self, hass, config, channel):
+    def __init__(self, hass, config, channel, stream):
         ReolinkCoordinatorEntity.__init__(self, hass, config)
         Camera.__init__(self)
 
-        self._entry_id = config.entry_id
+        if self.enabled and channel not in self._host.cameras:
+            self._host.cameras[channel] = self
 
-        self._channel = channel
-        self._ffmpeg = self._hass.data[DATA_FFMPEG]
+        self._channel   = channel
+        self._stream    = stream
+        self._ffmpeg    = self._hass.data[DATA_FFMPEG]
+
+        self._attr_name                             = f"{self._host.api.camera_name(self._channel)} {self._stream}"
+        self._attr_unique_id                        = f"reolink_camera_{self._host.unique_id}_{self._channel}_{self._stream}"
+        self._attr_entity_registry_enabled_default  = stream == "sub"
+
         self._ptz_commands = {
             "AUTO":         "Auto",
             "DOWN":         "Down",
@@ -138,17 +148,6 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
             "OFF":                  "Off",
         }
     #ndof __init__()
-
-
-    @property
-    def unique_id(self):
-        return f"reolink_camera_{self._host.unique_id}_{self._channel}"
-
-
-    @property
-    def name(self):
-        return self._host.api.camera_name(self._channel)
-
 
     @property
     def ptz_supported(self):
@@ -211,7 +210,7 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
 
 
     async def stream_source(self):
-        return await self._host.api.get_stream_source(self._channel)
+        return await self._host.api.get_stream_source(self._channel, self._stream)
     #endof stream_source()
 
 
