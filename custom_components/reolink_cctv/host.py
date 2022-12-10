@@ -106,7 +106,7 @@ class ReolinkHost:
             config[CONF_USERNAME],
             config[CONF_PASSWORD],
             port        = config.get(CONF_PORT),
-            use_https   = use_https,
+            use_https   = config.get(CONF_USE_HTTPS),
             stream      = cur_stream,
             protocol    = cur_protocol,
             timeout     = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
