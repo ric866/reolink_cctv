@@ -26,7 +26,6 @@ CONF_SUBSCRIPTION_WATCHDOG_INTERVAL     = "subscription_watchdog_interval"
 
 DEFAULT_EXTERNAL_HOST                   = ""
 DEFAULT_EXTERNAL_PORT                   = ""
-DEFAULT_USE_HTTPS                       = False
 DEFAULT_CHANNELS                        = [0]
 DEFAULT_MOTION_OFF_DELAY                = 5
 DEFAULT_MOTION_FORCE_OFF                = 0

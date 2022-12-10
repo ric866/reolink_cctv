@@ -44,7 +44,6 @@ from .const import (
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
-    DEFAULT_USE_HTTPS,
     DEFAULT_CHANNELS,
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
@@ -95,13 +94,6 @@ class ReolinkHost:
 
         self.motion_detection_enabled: Optional[list(bool)] = None
 
-        use_https = DEFAULT_USE_HTTPS
-        if CONF_USE_HTTPS in config:
-            use_https = config[CONF_USE_HTTPS]
-            if config[CONF_PORT] == 80 and use_https:
-                _LOGGER.warning("Port 80 was chosen, \"Use HTTPS\" set back to False.")
-                use_https = False
-
         self._clientSession: Optional[aiohttp.ClientSession] = None
         
         cur_stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM])
@@ -111,10 +103,10 @@ class ReolinkHost:
 
         self._api = Host(
             config[CONF_HOST],
-            config[CONF_PORT],
             config[CONF_USERNAME],
             config[CONF_PASSWORD],
-            use_https   = use_https,
+            port        = config.get(CONF_PORT),
+            use_https   = config.get(CONF_USE_HTTPS),
             stream      = cur_stream,
             protocol    = cur_protocol,
             timeout     = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
@@ -171,54 +163,49 @@ class ReolinkHost:
     async def init(self) -> bool:
         self._api.expire_session()
 
-        if await self._api.get_host_data():
-            #await self._api.is_admin()
-            if self._api.mac_address is None:
-                return False
-
-            enable_onvif = None
-            enable_rtmp  = None
-            enable_rtsp  = None
-
-            if not self._api.onvif_enabled:
-                _LOGGER.info("ONVIF is disabled on %s, trying to enable it...", self._api.nvr_name)
-                enable_onvif = True
-
-            if not self._api.rtmp_enabled and self._api.protocol == "rtmp":
-                _LOGGER.info("RTMP is disabled on %s, trying to enable it...", self._api.nvr_name)
-                enable_rtmp = True
-            elif not self._api.rtsp_enabled and self._api.protocol == "rtsp":
-                _LOGGER.info("RTSP is disabled on %s, trying to enable it...", self._api.nvr_name)
-                enable_rtsp = True
-
-            if enable_onvif or enable_rtmp or enable_rtsp:
-                if not await self._api.set_net_port(enable_onvif = enable_onvif, enable_rtmp = enable_rtmp, enable_rtsp = enable_rtsp):
-                    if enable_onvif:
-                        _LOGGER.error("Unable to switch on ONVIF on %s. You need it to be ON to receive notifications.", self._api.nvr_name)
-
-                    if enable_rtmp:
-                        _LOGGER.error("Unable to switch on RTMP on %s. You need it to be ON.", self._api.nvr_name)
-                    elif enable_rtsp:
-                        _LOGGER.error("Unable to switch on RTSP on %s. You need it to be ON.", self._api.nvr_name)
-                
-            self.motion_detection_enabled = {c: True for c in self._api.channels}
-
-            if self._unique_id is None: # Don't change it on-the-fly after the entry-ID got already initialized with current value
-                self._unique_id = self._api.mac_address.replace(":", "")
-
-            # Would needed only if there is no camera name in a "DevInfo" section, but looks like it's there for cameras, at least for those I tested on...
-            # if not await self._api.get_states():
-            #     return False
-
-            if not await self.register_webhook():
-                return False
-
-            if self._thumbnail_path is None:
-                self._thumbnail_path = self._hass.config.path(f"{STORAGE_DIR}/{DOMAIN}/{self._unique_id}")
-
-            return True
-        else:
+        if not await self._api.get_host_data():
             return False
+
+        if self._api.mac_address is None:
+            return False
+
+        enable_onvif = None
+        enable_rtmp  = None
+        enable_rtsp  = None
+
+        if not self._api.onvif_enabled:
+            _LOGGER.info("ONVIF is disabled on %s, trying to enable it...", self._api.nvr_name)
+            enable_onvif = True
+
+        if not self._api.rtmp_enabled and self._api.protocol == "rtmp":
+            _LOGGER.info("RTMP is disabled on %s, trying to enable it...", self._api.nvr_name)
+            enable_rtmp = True
+        elif not self._api.rtsp_enabled and self._api.protocol == "rtsp":
+            _LOGGER.info("RTSP is disabled on %s, trying to enable it...", self._api.nvr_name)
+            enable_rtsp = True
+
+        if enable_onvif or enable_rtmp or enable_rtsp:
+            if not await self._api.set_net_port(enable_onvif = enable_onvif, enable_rtmp = enable_rtmp, enable_rtsp = enable_rtsp):
+                if enable_onvif:
+                    _LOGGER.error("Unable to switch on ONVIF on %s. You need it to be ON to receive notifications.", self._api.nvr_name)
+
+                if enable_rtmp:
+                    _LOGGER.error("Unable to switch on RTMP on %s. You need it to be ON.", self._api.nvr_name)
+                elif enable_rtsp:
+                    _LOGGER.error("Unable to switch on RTSP on %s. You need it to be ON.", self._api.nvr_name)
+            
+        self.motion_detection_enabled = {c: True for c in self._api.channels}
+
+        if self._unique_id is None: # Don't change it on-the-fly after the entry-ID got already initialized with current value
+            self._unique_id = self._api.mac_address.replace(":", "")
+
+        if not await self.register_webhook():
+            return False
+
+        if self._thumbnail_path is None:
+            self._thumbnail_path = self._hass.config.path(f"{STORAGE_DIR}/{DOMAIN}/{self._unique_id}")
+
+        return True
     #endof init()
 
 

@@ -32,7 +32,6 @@ from .const import (
     DEFAULT_EXTERNAL_PORT,
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
-    DEFAULT_USE_HTTPS,
     DEFAULT_PLAYBACK_DAYS,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
@@ -52,9 +51,10 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
 
     VERSION = 1
 
-    num_channels: int   = 0
-    mac_address         = None
+    unique_id           = None
     host_name           = None
+    port                = None
+    use_https           = None
 
     @staticmethod
     @callback
@@ -70,15 +70,14 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
             self.data = user_input
 
             try:
-                self.info = await self.async_obtain_host_settings(self.hass, user_input)
+                await self.async_obtain_host_settings(self.hass, user_input)
 
-                await self.async_set_unique_id(self.info["id"])
+                await self.async_set_unique_id(self.unique_id)
                 self._abort_if_unique_id_configured()
 
-                #if self.num_channels > 1:
-                #    return await self.async_step_nvr()
-
-                return self.async_create_entry(title = self.info["title"], data = self.data)
+                user_input[CONF_PORT]       = self.port
+                user_input[CONF_USE_HTTPS]  = self.use_https
+                return self.async_create_entry(title = self.host_name, data = user_input)
 
             except CannotConnect:
                 errors[CONF_HOST] = "cannot_connect"
@@ -92,43 +91,23 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors[CONF_HOST] = "unknown"
 
+        data_schema = vol.Schema({
+            vol.Required(CONF_USERNAME, default = "admin"): str,
+            vol.Required(CONF_PASSWORD): str,
+            vol.Required(CONF_HOST): str,
+        })
+        if errors:
+            data_schema = data_schema.extend({
+                vol.Optional(CONF_PORT): cv.positive_int,
+                vol.Optional(CONF_USE_HTTPS): bool,
+            })
+
         return self.async_show_form(
             step_id = "user",
-            data_schema = vol.Schema(
-                {
-                    vol.Required(CONF_HOST): str,
-                    vol.Required(CONF_PORT, default = 80): cv.positive_int,
-                    vol.Required(CONF_USE_HTTPS, default = DEFAULT_USE_HTTPS): bool,
-                    vol.Required(CONF_USERNAME): str,
-                    vol.Required(CONF_PASSWORD): str,
-                }
-            ),
-            errors = errors,
+            data_schema = data_schema,
+            errors = errors
         )
     #endof async_step_user()
-
-
-    # async def async_step_nvr(self, user_input = None):
-    #     """Configure a NVR with multiple channels."""
-    #     errors = {}
-    #     if user_input is not None:
-    #         self.data.update(user_input)
-    #         return self.async_create_entry(title = self.host_name, data = self.data)
-
-    #     all_channels_defaults = []
-    #     all_channels = [e for e in range(self.num_channels)]
-    #     return self.async_show_form(
-    #         step_id = "nvr",
-    #         data_schema = vol.Schema(
-    #             {
-    #                 vol.Optional(CONF_CHANNELS, default = list(all_channels_defaults)): cv.multi_select(
-    #                     all_channels
-    #                 ),
-    #             }
-    #         ),
-    #         errors = errors,
-    #     )
-    # #endof async_step_nvr()
 
 
     async def async_obtain_host_settings(self, hass: core.HomeAssistant, user_input: dict):
@@ -137,43 +116,26 @@ class ReolinkFlowHandler(config_entries.ConfigFlow, domain = DOMAIN):
         try:
             if not await host.init():
                 _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: failed to obtain data from device.")
-                try:
-                    host.stop()
-                except:
-                    pass
-                host = None
                 raise CannotConnect
+            self.host_name      = host.api.nvr_name
+            self.unique_id      = host.unique_id
+            self.port           = host.api.port
+            self.use_https      = host.api.use_https
         except Exception as e:
             err = str(e)
             if err:
                 _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: \"{err}\".")
             else:
                 _LOGGER.error(f"Error while performing initial setup of {host.api._host}:{host.api._port}: failed to connect to device.")
+            raise CannotConnect
+        finally:
             try:
-                host.stop()
+                await host.stop()
             except:
                 pass
             host = None
-            raise CannotConnect
 
-        title               = host.api.nvr_name
-        self.host_name      = title
-        self.num_channels   = host.api.num_channels
-        unique_id           = host.unique_id
-
-        try:
-            host.stop()
-        except:
-            pass
-        host = None
-
-        return {"title": title, "id": unique_id}
     #endof async_validate_input()
-
-
-    #async def async_finish_flow(self, flow, result):
-        """Finish flow."""
-        # if result['type'] == data_entry_flow.RESULT_TYPE_ABORT:
 
 
 ##########################################################################################################################################################
