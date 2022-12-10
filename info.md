@@ -12,6 +12,7 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 
 - Stream compression format option removed (deprecated by Reolink).
 - Now few cameras are created for each channel: one for each stream type. All but "Sub" are disabled by default.
+- Bug fixes...
 {% endif %}
 
 {% endif %}
