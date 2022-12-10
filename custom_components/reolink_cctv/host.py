@@ -43,14 +43,12 @@ from .const import (
     CONF_MOTION_FORCE_OFF,
     CONF_PROTOCOL,
     CONF_STREAM,
-    CONF_STREAM_FORMAT,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_CHANNELS,
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_MOTION_FORCE_OFF,
     DEFAULT_PROTOCOL,
     DEFAULT_STREAM,
-    DEFAULT_STREAM_FORMAT,
     DEFAULT_TIMEOUT,
     DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DOMAIN,
@@ -98,16 +96,20 @@ class ReolinkHost:
 
         self._clientSession: Optional[aiohttp.ClientSession] = None
         
+        cur_stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM])
+        cur_protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL])
+        if cur_protocol == "rtsp" and cur_stream == "ext":
+            cur_stream = "sub"
+
         self._api = Host(
             config[CONF_HOST],
             config[CONF_USERNAME],
             config[CONF_PASSWORD],
-            port = config.get(CONF_PORT),
-            use_https = config.get(CONF_USE_HTTPS),
-            stream = (DEFAULT_STREAM if CONF_STREAM not in options else options[CONF_STREAM]),
-            stream_format = (DEFAULT_STREAM_FORMAT if CONF_STREAM_FORMAT not in options else options[CONF_STREAM_FORMAT]),
-            protocol = (DEFAULT_PROTOCOL if CONF_PROTOCOL not in options else options[CONF_PROTOCOL]),
-            timeout = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
+            port        = config.get(CONF_PORT),
+            use_https   = use_https,
+            stream      = cur_stream,
+            protocol    = cur_protocol,
+            timeout     = (DEFAULT_TIMEOUT if CONF_TIMEOUT not in options else options[CONF_TIMEOUT]),
             aiohttp_get_session_callback = self.get_iohttp_session
         )
 
@@ -235,7 +237,7 @@ class ReolinkHost:
     #endof disconnect()
 
 
-    async def stop(self, *args):
+    async def stop(self, event = None):
         """Disconnect the API and deregister the event listener."""
         await self.unregister_webhook()
         await self.disconnect()

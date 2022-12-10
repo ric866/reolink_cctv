@@ -81,6 +81,7 @@ class ReolinkMediaSource(MediaSource):
 
         self.hass                       = hass
         self._last_token: dt.datetime   = None
+        # self._stream_prefs: DynamicStreamSettings = DynamicStreamSettings()
     #endof __init__()
 
 
@@ -123,7 +124,16 @@ class ReolinkMediaSource(MediaSource):
 
         mime_type, url = await host.api.get_vod_source(int(camera_id), file)
 
-        stream = create_stream(self.hass, url, {})
+        try:
+            from homeassistant.components.camera import DynamicStreamSettings
+            from homeassistant.components.camera import CameraPreferences
+            from homeassistant.components.camera import DATA_CAMERA_PREFS
+            prefs: CameraPreferences = self.hass.data[DATA_CAMERA_PREFS]
+            stream_prefs: DynamicStreamSettings = await prefs.get_dynamic_stream_settings(host.cameras[int(camera_id)].entity_id)
+        except ModuleNotFoundError:
+            stream_prefs = None
+
+        stream = create_stream(self.hass, url, {}, dynamic_stream_settings = stream_prefs)
         stream.add_provider(HLS_PROVIDER, timeout = 3600)
         url: str = stream.endpoint_url(HLS_PROVIDER)
         # #HACK: The media browser seems to have a problem with the master_playlist (it does not load the referenced playlist)

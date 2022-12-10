@@ -27,7 +27,6 @@ from .const import (
     CONF_PROTOCOL,
     CONF_STREAM,
     CONF_THUMBNAIL_PATH,
-    CONF_STREAM_FORMAT,
     CONF_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_EXTERNAL_HOST,
     DEFAULT_EXTERNAL_PORT,
@@ -36,7 +35,6 @@ from .const import (
     DEFAULT_MOTION_OFF_DELAY,
     DEFAULT_PLAYBACK_DAYS,
     DEFAULT_STREAM,
-    DEFAULT_STREAM_FORMAT,
     DEFAULT_SUBSCRIPTION_WATCHDOG_INTERVAL,
     DEFAULT_TIMEOUT,
     DEVICE_CONFIG_UPDATE_COORDINATOR,
@@ -164,9 +162,13 @@ async def entry_update_listener(hass: HomeAssistant, entry: ConfigEntry):
     host.api.external_host  = entry.options.get(CONF_EXTERNAL_HOST, DEFAULT_EXTERNAL_HOST)
     host.api.external_port  = entry.options.get(CONF_EXTERNAL_PORT, DEFAULT_EXTERNAL_PORT)
     host.api.timeout        = entry.options.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
-    host.api.protocol       = entry.options.get(CONF_PROTOCOL, DEFAULT_PROTOCOL)
-    host.api.stream         = entry.options.get(CONF_STREAM, DEFAULT_STREAM)
-    host.api.stream_format  = entry.options.get(CONF_STREAM_FORMAT, DEFAULT_STREAM_FORMAT)
+
+    cur_protocol            = entry.options.get(CONF_PROTOCOL, DEFAULT_PROTOCOL)
+    cur_stream              = entry.options.get(CONF_STREAM, DEFAULT_STREAM)
+    if cur_protocol == "rtsp" and cur_stream == "ext":
+        cur_stream = "sub"
+    host.api.protocol       = cur_protocol
+    host.api.stream         = cur_stream
 
     coordinator_subscription_watchdog: DataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id][SUBSCRIPTION_WATCHDOG_COORDINATOR]
 

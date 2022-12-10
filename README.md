@@ -47,7 +47,8 @@ automation:
 I intentionally do not fill-in **all** the thumbnails during media-browsing: this way if your NVR is recording 24/7 - you have the way to distinguish. Those 1-2 hours chunks **with** thumbnails on them had some movement events, and those **without** thumbnails did not have any movements during all chunk recording (so the last-record sensor did not auto-write any thumbnails because no events happened).
 - Implemented garbage-collection for old thumbnails/scrennshots when browsing, to not overfill Home Assistant drive. But you still **need to setup a periodic action** that calls the integration's `cleanup_thumbnails` service: it will cleanup all the motion-events thumbnails older than the "Playback range" config setting (10 days by default). Otherwise you could overfill your HA drive by hi-res thumbnails, especially if you have a lot of motion-events on a lot of cameras.
 - The device **actions** now allow to create a screenshot-file for a particular camera at a current time, stored as `snapshot.jpg` instead of a name representing the time of the beginning of a last **recorded** video-chunk (used for thumbnails previously, which now is done automaticlly by a "last record" sensor). Not sure though this custom-action is needed at all - because there is already a standard HA screenshot-making service for any camera (just a little bit clunkier to setup)...
-- When opening a current camera-stream sometimes the hi-res RTMP/RTSP video stream is too laggy. So there is a new "**images**" option introduced in stream-types config, which will just show a choppy image sequence instead of video stream (which is faster).
+- Now few cameras are created for each channel: one for each stream type.
+- When opening a current camera-stream sometimes the hi-res RTMP/RTSP video stream is too laggy. So there is a new "**Snapshots**" stream introduced, which will just show a choppy image sequence instead of a video stream (which is faster).
 - Now the **rich** ONVIF subscription format is supported: I've found out that some Reolink cameras send the notification messages that already have all the information about kind of AI object detected. Thus, if receiving such a rich notification, this component does not need to start a long communication with NVR/camera to ask it what particular object was just detected, before reporting motion - it just uses this info directly from the received notification message, which is much faster and doesn't waste machine/network resources.
 - Reolink's data-normalisation of NVR/camera API-commands is a mess (same as their "API reference" document found in their site downloads). To still have it a little more clear "what is global - what is camera-specific", switches are split in two sets in integration-entry UI: *kinda* global ones, and camera-specific ones (useful if NVR connection is used).
 
@@ -174,13 +175,12 @@ Control the PTZ (Pan Tilt Zoom) movement of the camera.
 
 ## Camera
 
-This integration creates a camera entity, providing a live-stream configurable from the integrations page. In the options menu, the following parameters can be configured:
+This integration creates few camera entities, one for each stream type. In addition it provides a VoD stream type configurable from the integrations config-panel. In the options menu, the following parameters can be configured:
 
 | Parameter               | Description                                                                                                 |
 | :-------------------    | :---------------------------------------------------------------------------------------------------------- |
-| Stream                  | Switch between Sub or Main camera stream.                                                                   |
-| Stream format           | Switch between h264 and h265 stream formats.                                                                |
-| Protocol                | Switch between the RTMP or RTSP streaming protocol, or "images" to watch series of still images instead.    |
+| Protocol                | Switch between the RTMP or RTSP streaming protocol.                                                         |
+| Stream                  | Switch between Main, Sub, or Ext camera VoD stream.                                                         |
 
 ## Binary Sensor
 

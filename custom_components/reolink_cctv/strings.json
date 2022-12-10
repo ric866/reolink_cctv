@@ -38,8 +38,7 @@
           "motion_off_delay": "Motion sensor off delay (seconds)",
           "motion_force_off": "Motion sensor force-off timeout (seconds)",
           "playback_days": "Playback range (days)",
-          "playback_thumbnail_path": "Custom thumbnail path",
-          "stream_format": "Stream format"
+          "playback_thumbnail_path": "Custom thumbnail path"
         }
       }
     }
