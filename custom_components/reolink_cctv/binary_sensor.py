@@ -199,7 +199,7 @@ class MotionSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
     # Class methods
     async def handle_event(self, event):
         """Handle incoming event for motion detection."""
-        if not self.enabled:
+        if not self.hass or not self.enabled:
             return
 
         motion_event_state          = None
@@ -375,7 +375,7 @@ class ObjectDetectedSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
     # Methods
     async def handle_event(self, event):
         """Handle incoming event for AI motion detection."""
-        if not self.enabled:
+        if not self.hass or not self.enabled:
             return
 
         ai_refresh_event_state      = None
@@ -505,7 +505,7 @@ class VisitorSensor(ReolinkCoordinatorEntity, ReolinkBinarySensorEntity):
     # Class methods
     async def handle_event(self, event):
         """Handle incoming event for visitor pressed a doorbell button."""
-        if not self.enabled:
+        if not self.hass or not self.enabled:
             return
 
         visitor_event_state = None

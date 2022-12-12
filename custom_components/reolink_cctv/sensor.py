@@ -170,7 +170,7 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
 
 
     async def _update_last_record(self):
-        if not self.enabled:
+        if not self.hass or not self.enabled:
             return
 
         end = dt_utils.now()
