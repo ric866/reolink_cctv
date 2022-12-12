@@ -10,7 +10,7 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 {% else %}
 #### Changes of version {{ version_available }}
 
-- Regression fix: stream issue with some cameras.
+- Workaround for some weird HA issue, happening when "last record" sensor is disabled.
 
 **IMPORTANT**: Version **0.1.X** has different camera IDs, so you probably will need to re-config all places where camera-streams are referenced.
 {% endif %}
