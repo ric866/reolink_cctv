@@ -143,7 +143,8 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
         self._bus_listener = self.hass.bus.async_listen(self._host.event_id, self.handle_event)
-        #self._hass.async_add_job(self._update_last_record)
+        # if self.hass and self.enabled:
+        #     self._hass.async_add_job(self._update_last_record)
     #endof async_added_to_hass()
 
 
@@ -158,14 +159,16 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
     async def request_refresh(self):
         """ Force an update of the sensor """
         await super().request_refresh()
-        self._hass.async_add_job(self._update_last_record)
+        if self.hass and self.enabled:
+            self._hass.async_add_job(self._update_last_record)
     #endof request_refresh()
 
 
     async def async_update(self):
         """ Polling update """
         await super().async_update()
-        self._hass.async_add_job(self._update_last_record)
+        if self.hass and self.enabled:
+            self._hass.async_add_job(self._update_last_record)
     #endof async_update()
 
 
@@ -260,6 +263,9 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
 
 
     async def handle_event(self, event):
+        if not self.hass or not self.enabled:
+            return
+
         """Handle incoming event for VoD update"""
         if (MOTION_DETECTION_TYPE not in event.data or not event.data[MOTION_DETECTION_TYPE]) and (MOTION_COMMON_TYPE not in event.data or not event.data[MOTION_COMMON_TYPE]):
             return
