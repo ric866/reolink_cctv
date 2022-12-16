@@ -33,6 +33,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_devices
                 devices.append(SirenSwitch(hass, config_entry, channel))
             elif capability == "irLights":
                 devices.append(IRLightsSwitch(hass, config_entry, channel))
+            elif capability == "doorbellLight":
+                devices.append(DoorbellLightSwitch(hass, config_entry, channel))
             elif capability == "spotlight":
                 devices.append(SpotLightSwitch(hass, config_entry, channel))
 
@@ -258,6 +260,74 @@ class IRLightsSwitch(ReolinkCoordinatorEntity, ToggleEntity):
         await self.request_refresh()
     #endof async_turn_off()
 #endof class IRLightsSwitch
+
+
+##########################################################################################################################################################
+# Doorbell-light
+##########################################################################################################################################################
+class DoorbellLightSwitch(ReolinkCoordinatorEntity, ToggleEntity):
+
+    def __init__(self, hass, config, channel: Optional[int] = None):
+        ReolinkCoordinatorEntity.__init__(self, hass, config)
+        ToggleEntity.__init__(self)
+
+        self._attr_entity_category  = EntityCategory.CONFIG
+        self._channel               = channel
+    #endof __init__()
+
+
+    @property
+    def unique_id(self):
+        if self._channel is None:
+            return f"reolink_doorbellLightSwitch_{self._host.unique_id}"
+        else:
+            return f"reolink_doorbellLightSwitch_{self._host.unique_id}_{self._channel}"
+    #endof unique_id
+
+
+    @property
+    def name(self):
+        if self._channel is None:
+            return f"{self._host.api.nvr_name} doorbell light"
+        else:
+            cam_name = self._host.api.camera_name(self._channel)
+            return f"{cam_name} doorbell light"
+    #endof name
+
+
+    @property
+    def is_on(self):
+        return self._host.api.doorbell_light_enabled(0 if self._channel is None else self._channel)
+    #endof is_on
+
+
+    @property
+    def device_class(self):
+        return SwitchDeviceClass.SWITCH
+    #endof device_class
+
+
+    @property
+    def icon(self):
+        if self.is_on:
+            return "mdi:flashlight"
+        return "mdi:flashlight-off"
+    #endof icon
+
+
+    async def async_turn_on(self, **kwargs):
+        """Enable doorbell light."""
+        await self._host.api.set_power_led(0 if self._channel is None else self._channel, True, True)
+        await self.request_refresh()
+    #endof async_turn_on()
+
+
+    async def async_turn_off(self, **kwargs):
+        """Disable doorbell light."""
+        await self._host.api.set_power_led(0 if self._channel is None else self._channel, True, False)
+        await self.request_refresh()
+    #endof async_turn_off()
+#endof class DoorbellLightSwitch
 
 
 ##########################################################################################################################################################
