@@ -54,7 +54,7 @@ I intentionally do not fill-in **all** the thumbnails during media-browsing: thi
 
 ## IMPORTANT notes
 
-I tested this component with Home assistant **2022.8.6**. Not sure if it would work with a lot older one...
+:warning: **For the motion detection to work, Home Assistant must be reachable via HTTP from your local network. So when using HTTPS internally, motion detection will not work.** This is the Reolink firmware bug: it fails to send ONVIF notifications to HTTPS webhooks.
 
 :warning: This new component most likely will **conflict** if used at the same time with `reolink_dev`. So it would be a good idea to save the Home Assistant config folder, and remove `reolink_dev` before start using this one. Maybe you'll need to make few corrections to already existing camera-automations, because there are some differences in this component's namings/actions...
 
@@ -106,8 +106,6 @@ rm -f ./master.tar.gz
 
 In your Home Assistant installation go to: **Configuration > Integrations**, click the button **Add Integration > Reolink IP NVR/camera**
 Enter the details for your NVR/camera. The device and other sensors will now be available as an entity.
-
-For the motion detection to work, Home Assistant must be reachable via http from your local network. So when using https internally, motion detection will not work at this moment.
 
 For the services and switch entities of this integration to work, you need a camera user of type "Administrator". Users of type "Guest" can only view the switch states but cannot change them and cannot call the services. Users are created and managed through the web interface of the camera (Device Settings / Cog icon -> User) or through the app (Device Settings / Cog icon -> Advanced -> User Management).
 
