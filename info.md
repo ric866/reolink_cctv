@@ -10,7 +10,7 @@ A Home Assistant integration for your Reolink security NVR/cameras. It enables y
 {% else %}
 #### Changes of version {{ version_available }}
 
-- Implemented doorbell-light switch. I did not test it, as I have no doorbell camera. So let me know if some issues with this new feature...
+- Fixed a bug in the `reolink-ip` lib: doorbell light switch was created for non-doorbell cameras too.
 
 **IMPORTANT**: Version **0.1.X** has different camera IDs in comparison to **0.0.X**, so you probably will need to re-config all places where camera-streams are referenced.
 {% endif %}
