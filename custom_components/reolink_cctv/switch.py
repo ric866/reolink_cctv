@@ -438,7 +438,6 @@ class SirenSwitch(ReolinkCoordinatorEntity, ToggleEntity):
         ReolinkCoordinatorEntity.__init__(self, hass, config)
         ToggleEntity.__init__(self)
 
-        self._sistatus              = False
         self._attr_entity_category  = EntityCategory.CONFIG
         self._channel               = channel
     #endof __init__()
@@ -466,7 +465,7 @@ class SirenSwitch(ReolinkCoordinatorEntity, ToggleEntity):
     @property
     def is_on(self):
         # return self._host.api.audio_alarm_state
-        return self._sistatus
+        return self._host.audio_alarm_enabled(self._channel)
     #endof is_on
 
 
@@ -489,9 +488,7 @@ class SirenSwitch(ReolinkCoordinatorEntity, ToggleEntity):
     async def async_turn_on(self, **kwargs):
         """Turn On Siren."""
         # Uses call to simple turn on routine which sets night mode on, auto, 100% bright.
-
         await self._host.api.set_siren(0 if self._channel is None else self._channel, True)
-        self._sistatus = True
         await self.request_refresh()
     #endof async_turn_on()
 
@@ -499,7 +496,6 @@ class SirenSwitch(ReolinkCoordinatorEntity, ToggleEntity):
     async def async_turn_off(self, **kwargs):
         """Turn Off Siren."""
         await self._host.api.set_siren(0 if self._channel is None else self._channel, False)
-        self._sistatus = False
         await self.request_refresh()
     #endof async_turn_off()
 #endof class SirenSwitch
