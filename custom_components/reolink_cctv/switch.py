@@ -465,7 +465,7 @@ class SirenSwitch(ReolinkCoordinatorEntity, ToggleEntity):
     @property
     def is_on(self):
         # return self._host.api.audio_alarm_state
-        return self._host.audio_alarm_enabled(self._channel)
+        return self._host.api.audio_alarm_enabled(self._channel)
     #endof is_on
 
 
