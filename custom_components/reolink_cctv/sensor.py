@@ -255,6 +255,8 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
 
         self._state = True
 
+        if not self.hass or not self.enabled:
+            return
         self.async_schedule_update_ha_state()
     #endof _update_last_record()
 
