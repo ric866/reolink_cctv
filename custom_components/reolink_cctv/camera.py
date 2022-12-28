@@ -185,14 +185,14 @@ class ReolinkCamera(ReolinkCoordinatorEntity, Camera):
         if self._host.api.sensitivity_presets:
             attrs["sensitivity"] = self.get_sensitivity_presets()
 
-        if self.playback_support:
-            data: dict = self.hass.data.get(DOMAIN_DATA)
-            data = data.get(self._host.unique_id) if data else None
-            last: VoDRecord = data.get(LAST_RECORD) if data else None
-            if last and last.url:
-                attrs["video_url"] = last.url
-                if last.thumbnail and last.thumbnail.exists:
-                    attrs["video_thumbnail"] = last.thumbnail.url
+        # if self.playback_support:
+        #     data: dict = self.hass.data.get(DOMAIN_DATA)
+        #     data = data.get(self._host.unique_id) if data else None
+        #     last: VoDRecord = data.get(LAST_RECORD) if data else None
+        #     if last and last.url:
+        #         attrs["video_url"] = last.url
+        #         if last.thumbnail and last.thumbnail.exists:
+        #             attrs["video_thumbnail"] = last.thumbnail.url
 
         return attrs
     #endof extra_state_attributes()

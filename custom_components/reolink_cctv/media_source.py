@@ -130,10 +130,10 @@ class ReolinkMediaSource(MediaSource):
             from homeassistant.components.camera import DATA_CAMERA_PREFS
             prefs: CameraPreferences = self.hass.data[DATA_CAMERA_PREFS]
             stream_prefs: DynamicStreamSettings = await prefs.get_dynamic_stream_settings(host.cameras[int(camera_id)].entity_id)
-        except ModuleNotFoundError:
-            stream_prefs = None
+            stream = create_stream(self.hass, url, {}, dynamic_stream_settings = stream_prefs)
+        except ImportError: #ModuleNotFoundError:
+            stream = create_stream(self.hass, url, {})
 
-        stream = create_stream(self.hass, url, {}, dynamic_stream_settings = stream_prefs)
         stream.add_provider(HLS_PROVIDER, timeout = 3600)
         url: str = stream.endpoint_url(HLS_PROVIDER)
         # #HACK: The media browser seems to have a problem with the master_playlist (it does not load the referenced playlist)
