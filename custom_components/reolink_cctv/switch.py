@@ -155,14 +155,14 @@ class EmailSwitch(ReolinkCoordinatorEntity, ToggleEntity):
         else:
             cam_name = self._host.api.camera_name(self._channel)
             return f"{cam_name} Email"
-    #enfof name
+    #endof name
 
 
     @property
     def is_on(self):
         """Camera Motion email upload Status."""
         return self._host.api.email_enabled(self._channel)
-    #enfof is_on
+    #endof is_on
 
 
     @property

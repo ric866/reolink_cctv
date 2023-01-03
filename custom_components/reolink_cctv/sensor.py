@@ -103,7 +103,7 @@ class LastRecordSensor(ReolinkCoordinatorEntity, SensorEntity):
             return None
 
         return date.isoformat()
-    #enfof state()
+    #endof state()
 
     @property
     def icon(self):
