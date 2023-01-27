@@ -415,8 +415,8 @@ class ReolinkHost:
                 self._hass.components.webhook.async_generate_path(self._webhook_id),
             )
         except NoURLAvailableError:
-            if not warnedAboutNoURLAvailableError:
-                warnedAboutNoURLAvailableError = True
+            if not self.warnedAboutNoURLAvailableError:
+                self.warnedAboutNoURLAvailableError = True
                 _LOGGER.warning("You're using HTTP for internal URL while using HTTPS for external URL in HA, which is not supported anymore by HomeAssistant starting 2022.3.\n"
                  "Please change your configuration to use HTTPS for internal URL or disable HTTPS for external.")
             try:
